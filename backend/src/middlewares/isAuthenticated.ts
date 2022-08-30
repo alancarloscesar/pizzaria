@@ -24,10 +24,13 @@ export function isAuthenticated(req:Request, res:Response, next:NextFunction){
             token,
             process.env.JWT_SECRET
         ) as Payload;
-        console.log(sub)
+        
+        req.user_id = sub;//criando variavel para pegar o id, devemo tipar
+
     } catch (error) {
         return res.status(401).end();//barra a req
     }
+
 
     return next();//para deixar proceguir na requisição, saindo o loop infirito do midd
 }
