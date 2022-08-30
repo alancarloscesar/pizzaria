@@ -1,13 +1,15 @@
-import {Router, Response, Request} from 'express'
+import { Router } from "express";
+import { CreateUserController } from "./controllers/user/CreateUserController";
+import { AuthUserController } from "./controllers/user/AuthUserController";
+import { DetailUserController } from "./controllers/user/DetailUserController";
+
+import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 const router = Router();
 
-router.get("/teste", (req:Request, res:Response)=>{
-    throw new Error ('Erro ao fazer essa requisição')
-    
-    return res.json({
-        ok: true
-    })
-})
+//---- ROTAS USER -----
+router.post('/users',new CreateUserController().handle)//rota criar user
+router.post('/session',new AuthUserController().handle)//rota fazer login
+router.get('/me',isAuthenticated ,new DetailUserController().handle)//rota para detalhes de usuario
 
 export {router}
