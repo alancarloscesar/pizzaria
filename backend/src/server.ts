@@ -6,13 +6,15 @@ import path from 'path'
 
 const app = express();
 
+app.use(cors());//liberando acesso para qualquer ip
+
 app.use(express.json())//informando que o retorno sera um json
 app.use(router)
 app.use(
     '/files',
     express.static(path.resolve(__dirname,'..','tmp'))
 )
-app.use(cors())//liberando acesso para qualquer ip
+
 
 
 //tratando errors

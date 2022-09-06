@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+
 import multer from "multer";
 import uploadConfig from './config/multer'
 
@@ -30,7 +31,7 @@ const upload = multer(uploadConfig.upload("./tmp"))
 
 //---- ROTAS USER -----
 router.post('/users',new CreateUserController().handle)//rota criar user
-router.post('/session',new AuthUserController().handle)//rota fazer login
+router.post('/session', new AuthUserController().handle)//rota fazer login
 router.get('/me',isAuthenticated ,new DetailUserController().handle)//rota para detalhes de usuario
 
 //------ ROTAS CATEGORY ------
