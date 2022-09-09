@@ -7,10 +7,10 @@ class DetailOrderController{
 
         const detailOrderservice = new DetailOrderService();
 
-        const orderDetail = await detailOrderservice.execute({
+        const orders = await detailOrderservice.execute({
             order_id
         })
-        return res.json(orderDetail)
+        return res.json(orders)
     }
 }
 
