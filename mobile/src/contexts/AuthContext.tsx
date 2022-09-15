@@ -6,9 +6,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 type AuthContextData = {
     user: UserProps;
     isAuthenticated: boolean;
-    signIn: (credentials: SignInProps) => Promise<void>
+    signIn: (credentials: SignInProps) => Promise<void>//com props
     loading: boolean,
-    loadingAuth: boolean
+    loadingAuth: boolean,
+    signOut: () => Promise<void>//sem props
 }
 
 type UserProps = {
@@ -42,14 +43,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [loading, setLoading] = useState(true)//passamos o loading true, e false apos finalizar o if
 
     const isAuthenticated = !!user.name;//transformando em boolean
-
+    
     useEffect(() => {//pega o token no asyncStorage ao carregar o componente
         async function getUser() {
             const userInfo = await AsyncStorage.getItem('@smartMenu')//pegando a chave do async
             let hashUser: UserProps = JSON.parse(userInfo || '{}')//transf. string em objeto ou objeto vazio
-
+            
             // verificar se tem algo la dentro
-            if(Object.keys(hashUser).length > 0){//se tiver algo na chave
+            if (Object.keys(hashUser).length > 0) {//se tiver algo na chave
                 api.defaults.headers.common['Authorization'] = `Bearer ${hashUser.token}`//deixa como default no app o token
                 
                 //passamos os dados para o state user
@@ -61,11 +62,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 })
 
                 setLoading(false)
-            
+                
             }
-
+            
         }
-
+        setLoading(false)
+        
         getUser();
     }, [])
 
@@ -94,17 +96,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 token
             })
             //no index.tsx que seria nosso controle de rotas repassamos o isAuthenticated via contexto
-
+            
+            setLoadingAuth(false) 
 
         } catch (error) {
             console.log("Erro ao ecessar rota: " + error)
-            setLoadingAuth(false)
+            setLoadingAuth(false) 
         }
+    }
+
+    async function signOut() {
+        await AsyncStorage.clear()
+            .then(() => {
+                setUser({
+                    id: '',
+                    name: '',
+                    email: '',
+                    token: ''
+                })
+            })
+            .catch((err) => {
+                console.log('Erro ao deslogar: ' + err)
+            })
     }
 
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, signIn, loading, loadingAuth }}>
+        <AuthContext.Provider value={{
+            user,
+            isAuthenticated,
+            signIn,
+            loading,
+            loadingAuth,
+            signOut
+        }}
+        >
             {children}
         </AuthContext.Provider>
     )
