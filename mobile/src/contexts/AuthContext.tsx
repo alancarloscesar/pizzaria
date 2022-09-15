@@ -1,4 +1,4 @@
-import React, { useState, createContext, ReactNode } from 'react';
+import React, { useState, createContext, ReactNode, useEffect } from 'react';
 import { api } from '../services/api'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -7,6 +7,8 @@ type AuthContextData = {
     user: UserProps;
     isAuthenticated: boolean;
     signIn: (credentials: SignInProps) => Promise<void>
+    loading: boolean,
+    loadingAuth: boolean
 }
 
 type UserProps = {
@@ -37,8 +39,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
     })
 
     const [loadingAuth, setLoadingAuth] = useState(false)
+    const [loading, setLoading] = useState(true)//passamos o loading true, e false apos finalizar o if
 
     const isAuthenticated = !!user.name;//transformando em boolean
+
+    useEffect(() => {//pega o token no asyncStorage ao carregar o componente
+        async function getUser() {
+            const userInfo = await AsyncStorage.getItem('@smartMenu')//pegando a chave do async
+            let hashUser: UserProps = JSON.parse(userInfo || '{}')//transf. string em objeto ou objeto vazio
+
+            // verificar se tem algo la dentro
+            if(Object.keys(hashUser).length > 0){//se tiver algo na chave
+                api.defaults.headers.common['Authorization'] = `Bearer ${hashUser.token}`//deixa como default no app o token
+                
+                //passamos os dados para o state user
+                setUser({
+                    id: hashUser.id,
+                    email: hashUser.email,
+                    name: hashUser.name,
+                    token: hashUser.token
+                })
+
+                setLoading(false)
+            
+            }
+
+        }
+
+        getUser();
+    }, [])
 
     async function signIn({ email, password }: SignInProps) {
         setLoadingAuth(true)
@@ -51,7 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const { id, name, token } = response.data//desconstruindo do response.data
 
             const data = {
-                ... response.data//pega tudo do response: id, name e token e guarda no data
+                ...response.data//pega tudo do response: id, name e token e guarda no data
             }
 
             await AsyncStorage.setItem('@smartMenu', JSON.stringify(data))//ceia chave e converte o objeto
@@ -66,7 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             })
             //no index.tsx que seria nosso controle de rotas repassamos o isAuthenticated via contexto
 
-            
+
         } catch (error) {
             console.log("Erro ao ecessar rota: " + error)
             setLoadingAuth(false)
@@ -75,7 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, signIn }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, signIn, loading, loadingAuth }}>
             {children}
         </AuthContext.Provider>
     )

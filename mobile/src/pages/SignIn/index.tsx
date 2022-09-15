@@ -3,7 +3,7 @@ import {
     TouchableHighlight,
 } from "react-native";
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Ionicons } from '@expo/vector-icons'
 import { Alert } from "react-native";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -15,7 +15,9 @@ export default function SignIn() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const {signIn} = useContext(AuthContext)
+    const { signIn } = useContext(AuthContext)
+
+    
 
     async function handleLogin() {
         if (password === '' || email === '') {
@@ -23,7 +25,7 @@ export default function SignIn() {
             return;
         }
 
-        await signIn({email, password})//chamando o signIn do contexto
+        await signIn({ email, password })//chamando o signIn do contexto
     }
 
     return (
@@ -53,7 +55,7 @@ export default function SignIn() {
                 />
                 <TouchableHighlight style={styles.btnShow} onPress={() => setVisible(!visible)}>
                     {
-                        visible 
+                        visible
                             ?
                             <Ionicons name="eye" color="#fff" size={23} />
                             :

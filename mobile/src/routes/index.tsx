@@ -7,8 +7,8 @@ import { AuthContext } from "../contexts/AuthContext";
 
 export default function Routes() {
 
-    const { isAuthenticated } = useContext(AuthContext)//recebendo do contexto
-    const loading = false;
+    const { isAuthenticated, loading } = useContext(AuthContext)//recebendo do contexto
+    //esse loading vem true do contexto e ainda lá fica false apos terminar a busca no async
 
     if (loading) {
         return (
