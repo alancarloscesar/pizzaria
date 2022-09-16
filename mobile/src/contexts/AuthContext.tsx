@@ -10,6 +10,7 @@ type AuthContextData = {
     loading: boolean,
     loadingAuth: boolean,
     signOut: () => Promise<void>//sem props
+    newOrder: (credentials: NewOrderProps) => Promise<void>//para criar mesa
 }
 
 type UserProps = {
@@ -22,6 +23,10 @@ type UserProps = {
 type SignInProps = {
     email: string;
     password: string;
+}
+
+type NewOrderProps = {
+    table: string
 }
 
 
@@ -38,6 +43,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         email: '',
         token: ''
     })
+
+    const [table, setTable] = useState<NewOrderProps>();
 
     const [loadingAuth, setLoadingAuth] = useState(false)
     const [loading, setLoading] = useState(true)//passamos o loading true, e false apos finalizar o if
@@ -120,6 +127,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
             })
     }
 
+    async function newOrder({table}:NewOrderProps){
+        try {
+            const response = await api.post('/order', {
+                table
+            })
+            const data = response.data
+
+            console.log(data)
+        } catch (error) {
+            console.log('erro ao criar mesa: ',error)
+        }
+    }
+
 
     return (
         <AuthContext.Provider value={{
@@ -128,7 +148,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             signIn,
             loading,
             loadingAuth,
-            signOut
+            signOut,
+            newOrder
         }}
         >
             {children}
