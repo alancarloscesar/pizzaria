@@ -1,19 +1,30 @@
 import Modal from 'react-modal';
 import styles from './styles.module.scss';
+import React, {useEffect} from 'react'
 
 import { FiX } from 'react-icons/fi'
 
-import { OrderItemProps } from '../../../pages/dashboard'
-
-interface ModalOrderProps {
+interface ModalSizeProps {
     isOpen: boolean;
     onRequestClose: () => void;
-    order: OrderItemProps[];
+    getCaregoryName: string
+    //category: Order
+    // order: OrderItemProps[];
 
-    handleFinishOrder: (id: string) => void;//para finalizar o pedido
+    // handleFinishOrder: (id: string) => void;//para finalizar o pedido
 }
 
-export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }: ModalOrderProps) {
+export type ModalProps = {
+    id: string,
+    name: string
+}
+
+export function ModalSizeCategory({ isOpen, onRequestClose, getCaregoryName/*, order, handleFinishOrder */}: ModalSizeProps) {
+
+    useEffect(()=>{
+        console.log(getCaregoryName)
+        
+    },[])
 
     const customStyles = {
         content: {
@@ -27,15 +38,12 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
         }
     };
 
-
-
     return (
         <Modal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
+            //getCaregoryName={getCaregoryName}
             style={customStyles}
-
-
         >
 
             <button
@@ -49,20 +57,22 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
 
             <div className={styles.container}>
 
-                <h2>Detalhes do pedido</h2>
+                <h2>Cadastro de Tamanho da categoria:</h2>
                 <span className={styles.table}>
-                    Mesa: <strong>{order[0].order.table}</strong>
+                    Categoria: <strong>{getCaregoryName}</strong>
+                    {/* Mesa: <strong>{order[0].order.table}</strong> */}
                 </span>
 
-                {order.map(item => (
+                {/* {order.map(item => (
                     <section key={item.id} className={styles.containerItem}>
                         <span>{item.amount} - <strong>{item.product.name}</strong></span>
                         <span className={styles.description}>{item.product.description}</span>
                     </section>
-                ))}
+                ))} */}
 
-                <button className={styles.finishedOrder} onClick={() => {handleFinishOrder(order[0].order_id) }}>
-                    Concluir Pedido
+                {/* <button className={styles.finishedOrder} onClick={() => {handleFinishOrder(order[0].order_id) }}> */}
+                <button className={styles.finishedOrder} >
+                    Cadastrar Tamanho
                 </button>
 
             </div>

@@ -32,6 +32,11 @@ export type ProductProps = {//tipagem de produtos
     price: number | string;
 }
 
+export type SizeProps = {
+    id: string,
+    name: string
+}
+
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
 
 export default function Order() {
@@ -41,12 +46,17 @@ export default function Order() {
 
     const [category, setCategory] = useState<CategoryProps[] | []>([])//passando a typagem
     const [selectedCategory, setSelectedCategory] = useState<CategoryProps | undefined>()//passando a typagem
+
     const [product, setProduct] = useState<ProductProps[] | []>([])
     const [selectedProduct, setSelectedProduct] = useState<ProductProps | undefined>()
+
+    const [size, setSize] = useState<SizeProps[] | []>([])
+    const [selectedSize, setSelectedSize] = useState<SizeProps | undefined>()
 
     const [amount, setAmount] = useState('1')
 
     const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
+    const [modalSizeVisible, setModalSizeVisible] = useState(false)
 
     const route = useRoute<OrderTypeProps>()
 
@@ -57,25 +67,27 @@ export default function Order() {
             setCategory(response.data)//passando reponse para o state 
             setSelectedCategory(response.data[0])
         }
+        async function loadSize(){
+            //AQUI VAI A ROTA PARA FILTRAR O TAMANHO PELA CATEGORIA ESCOLHIDA
+        }
         loadCategory();
     }, [])
 
     useEffect(() => {
-
         async function loadProducts() {
-            const response = await api.get('/product/category',{
+            const response = await api.get('/product/category', {
                 params: {
                     category_id: selectedCategory?.id
                 }
             })
-       
-       
+
             setProduct(response.data)
             setSelectedProduct(response.data[0])
         }
-
         loadProducts();
     }, [selectedCategory])//ação do effect ao selecionar uma categoria
+
+
 
     async function handleDeleteTable() {
 
