@@ -23,6 +23,8 @@ import { ListOrderController } from "./controllers/order/ListOrderController";
 import { DetailOrderController } from "./controllers/order/DetailOrderController";
 import { FinishOrderController } from "./controllers/order/FinishOrderController";
 
+import { AddSizeCategoryController } from "./controllers/size/addSizeCategoryController";
+
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 const router = Router();
@@ -51,5 +53,9 @@ router.put('/order/send', isAuthenticated, new SendOrderController().handle)
 router.get('/order', isAuthenticated, new ListOrderController().handle)
 router.get('/order/detail', isAuthenticated, new DetailOrderController().handle)
 router.put('/order/finish', isAuthenticated, new FinishOrderController().handle)
+
+//-------------ROTAS PARA O TAMANHO SIZE---------
+router.post('/size', isAuthenticated, new AddSizeCategoryController().handle)
+
 
 export {router}

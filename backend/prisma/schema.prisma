@@ -30,6 +30,7 @@ model Category {
 
   @@map("categories")
   products Product[]
+  sizes Size[]
 }
 
 model Product {
@@ -76,4 +77,17 @@ model Item {
   @@map("items")
   order_id String
   product_id String
+}
+
+model Size {
+  id String @id @default(uuid())
+  name String
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  category Category @relation(fields: [category_id], references: [id])
+
+  @@map("sizes")
+  category_id String
 }
