@@ -1,8 +1,16 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { useNavigation } from '@react-navigation/native'
+import {
+    View, Text, StyleSheet, SafeAreaView,
+    TouchableOpacity, TextInput, Modal
+} from 'react-native'
 
 import { useRoute, RouteProp } from '@react-navigation/native'//importa para pegar os dados que estão no navigate
 import { Ionicons } from '@expo/vector-icons'
+
+import { ModalPicker } from '../../components/ModalPicker'
+
+import { api } from '../../services/api'
 
 
 
@@ -13,26 +21,71 @@ type RouteDetailParams = {//tipagem dos dados recebidos
     }
 }
 
+export type CategoryProps = {//tipando os dados da categoria
+    id: string;
+    name: string;
+}
+
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
 
 export default function Order() {
 
     const [check, setCheck] = useState(false)
+    const navigation = useNavigation();
+    const [category, setCategory] = useState<CategoryProps[] | []>([])//passando a typagem
+    const [selectedCategory, setSelectedCategory] = useState<CategoryProps>()//passando a typagem
+    const [amount, setAmount] = useState('1')
+
+    const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
+
     const route = useRoute<OrderTypeProps>()
+
+    useEffect(() => {
+        async function loadCategory() {
+            const response = await api.get('/category')
+
+            setCategory(response.data)
+            setSelectedCategory(response.data[0])
+        }
+        loadCategory();
+    }, [])
+
+    async function handleDeleteTable() {
+
+        try {
+            await api.delete('/order', {//requisicao de deletar 
+                params: {//params - query params
+                    order_id: route.params.order_id
+                }
+            })
+            navigation.goBack();//voltar uma pagina
+        } catch (error) {
+            console.log("Erro ao excluir mesa -> " + error)
+        }
+
+    }
+
+    function handleCategorySelect(item: CategoryProps){//seleciona o item do modal
+        setSelectedCategory(item)//jogando o item no state
+
+    }
 
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.tabelArea}>
                 <Text style={styles.tableNumber}>Mesa: {route.params.number}</Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleDeleteTable}>
                     <Ionicons name="trash-outline" size={25} color='#ff3f4b' />
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.input}>
-                <Text style={styles.textInput}>Pizzas</Text>
-            </TouchableOpacity>
+            {category.length !== 0 && (//se meu array da category for diferente de 0
+                <TouchableOpacity style={styles.input} onPress={() => setModalCategoryVisible(true)}>
+                    {/* modal true */}
+                    <Text style={styles.textInput}>{selectedCategory?.name}</Text>
+                </TouchableOpacity>
+            )}
 
             <View style={styles.areaCheckTam}>
                 <TouchableOpacity style={styles.check}>
@@ -68,7 +121,8 @@ export default function Order() {
                 <Text style={styles.qtdText}>Quantidade: </Text>
                 <TextInput
                     style={[styles.input, { width: '60%', textAlign: 'center' }]}
-                    value='1'
+                    value={amount}
+                    onChangeText={setAmount}
                 />
             </View>
 
@@ -80,6 +134,19 @@ export default function Order() {
                     <Text style={styles.btnAvancarText}>Avançar</Text>
                 </TouchableOpacity>
             </View>
+
+            <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalCategoryVisible}
+            >
+                <ModalPicker
+                    handleClose={() => setModalCategoryVisible(false)}
+                    options={category}
+                    selectedItem={handleCategorySelect}
+                    //dados trabalhados de dentro do comp. modalPicker
+                />
+            </Modal>
 
         </SafeAreaView>
     )
@@ -97,7 +164,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: '4%',
-        justifyContent:'flex-end'
+        justifyContent: 'flex-end'
 
     },
     tableNumber: {

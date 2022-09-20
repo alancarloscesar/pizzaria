@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { api } from '../../services/api'
 
 //importando as tipagens de navegação
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -25,9 +26,14 @@ export default function Dashboard() {
             return;
         }
 
-        //passando os dados da tipagem do stack.screen da rota - enviando dados via navigate
-        navigation.navigate('Order', { number: table, order_id: '169f058b-3984-49b2-8c05-0b2ea45d0519' })
+        const response = await api.post('/order', {//requisição
+            table: Number(table)//passando o table e convertendo para numero
+        })
 
+        //passando os dados da tipagem do stack.screen da rota - enviando dados via navigate
+        navigation.navigate('Order', { number: table, order_id: response.data.id })//passando os dados
+
+        setTable('')
     }
 
     return (
