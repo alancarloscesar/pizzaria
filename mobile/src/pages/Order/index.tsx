@@ -26,14 +26,24 @@ export type CategoryProps = {//tipando os dados da categoria
     name: string;
 }
 
+export type ProductProps = {//tipagem de produtos
+    id: string;
+    name: string;
+    price: number | string;
+}
+
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
 
 export default function Order() {
 
     const [check, setCheck] = useState(false)
     const navigation = useNavigation();
+
     const [category, setCategory] = useState<CategoryProps[] | []>([])//passando a typagem
-    const [selectedCategory, setSelectedCategory] = useState<CategoryProps>()//passando a typagem
+    const [selectedCategory, setSelectedCategory] = useState<CategoryProps | undefined>()//passando a typagem
+    const [product, setProduct] = useState<ProductProps[] | []>([])
+    const [selectedProduct, setSelectedProduct] = useState<ProductProps | undefined>()
+
     const [amount, setAmount] = useState('1')
 
     const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
@@ -44,11 +54,28 @@ export default function Order() {
         async function loadCategory() {
             const response = await api.get('/category')
 
-            setCategory(response.data)
+            setCategory(response.data)//passando reponse para o state 
             setSelectedCategory(response.data[0])
         }
         loadCategory();
     }, [])
+
+    useEffect(() => {
+
+        async function loadProducts() {
+            const response = await api.get('/product/category',{
+                params: {
+                    category_id: selectedCategory?.id
+                }
+            })
+       
+       
+            setProduct(response.data)
+            setSelectedProduct(response.data[0])
+        }
+
+        loadProducts();
+    }, [selectedCategory])//ação do effect ao selecionar uma categoria
 
     async function handleDeleteTable() {
 
@@ -65,7 +92,7 @@ export default function Order() {
 
     }
 
-    function handleCategorySelect(item: CategoryProps){//seleciona o item do modal
+    function handleCategorySelect(item: CategoryProps) {//seleciona o item do modal
         setSelectedCategory(item)//jogando o item no state
 
     }
@@ -84,6 +111,7 @@ export default function Order() {
                 <TouchableOpacity style={styles.input} onPress={() => setModalCategoryVisible(true)}>
                     {/* modal true */}
                     <Text style={styles.textInput}>{selectedCategory?.name}</Text>
+                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             )}
 
@@ -103,17 +131,20 @@ export default function Order() {
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.input, { width: '60%', alignItems: 'center' }]}>
                     <Text style={styles.textInput}>M</Text>
+                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             </View>
 
 
             <TouchableOpacity style={styles.input}>
-                <Text style={styles.textInput}>Primeiro sabor</Text>
+                <Text style={styles.textInput}>{selectedProduct?.name}</Text>
+                <Ionicons name="caret-down-outline" color='#fff' size={22} />
             </TouchableOpacity>
 
             {check && (
                 <TouchableOpacity style={styles.input}>
-                    <Text style={styles.textInput}>Segundo sabor</Text>
+                    <Text style={styles.textInput}>{selectedProduct?.price}</Text>
+                    <Ionicons name="chevron-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             )}
 
@@ -144,7 +175,7 @@ export default function Order() {
                     handleClose={() => setModalCategoryVisible(false)}
                     options={category}
                     selectedItem={handleCategorySelect}
-                    //dados trabalhados de dentro do comp. modalPicker
+                //dados trabalhados de dentro do comp. modalPicker
                 />
             </Modal>
 
@@ -174,10 +205,12 @@ const styles = StyleSheet.create({
         fontWeight: '500'
     },
     input: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         width: '100%',
         backgroundColor: '#101026',
         height: 45,
-        justifyContent: 'center',
         paddingHorizontal: 16,
         borderRadius: 5,
         marginBottom: 14,
