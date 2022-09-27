@@ -14,6 +14,7 @@ export default function Category() {
     const [nameCat, setName] = useState('')
     const [categoryName, setCategoryName] = useState()
     const [visebleModal, setVisibleModal] = useState(false)
+    const [catId, setCatId] = useState('')
 
     async function handleAddCategory(event: FormEvent) {
         event.preventDefault();
@@ -34,6 +35,7 @@ export default function Category() {
             setVisibleModal(true)
             setName("")
             setCategoryName(response.data.name)
+            setCatId(response.data.id)
 
 
         } catch (error) {
@@ -60,7 +62,7 @@ export default function Category() {
                     <input
                         placeholder="Digite aqui o nome da categoria..."
                         value={nameCat}
-                        onChange={(e) => { setName(e.target.value) }}
+                        onChange={(e) => { setName(e.target.value.toUpperCase()) }}
                     />
                     <button type='submit'>
                         Cadastrar
@@ -73,6 +75,7 @@ export default function Category() {
                     isOpen={visebleModal}
                     onRequestClose={handleCloseModal}
                     getCaregoryName={categoryName}
+                    getCategoryId={catId}
                 />
             )}
 

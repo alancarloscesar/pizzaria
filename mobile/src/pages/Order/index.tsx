@@ -156,10 +156,22 @@ export default function Order() {
             name: selectedProduct?.name as string,
             amount: amount
         }
-
-
         setItems(oldArray => [...oldArray, data])
+    }
 
+    //função para deletar o item da flatlist e bd
+    async function handleDeleteItem(item_idd: string) {
+        const response = await api.delete('/order/item', {
+            params: {
+                item_id: item_idd
+            }
+        })
+        //apos remover da api removemos da flatlis com filter
+        let removeItem = items.filter(item => {
+            return (item.id !== item_idd)//retorna tudo menos o removido
+        })
+
+        setItems(removeItem)//atualiza flatlist
 
     }
 
@@ -169,9 +181,14 @@ export default function Order() {
         <SafeAreaView style={styles.container}>
             <View style={styles.tabelArea}>
                 <Text style={styles.tableNumber}>Mesa: {route.params.number}</Text>
-                <TouchableOpacity onPress={handleDeleteTable}>
-                    <Ionicons name="trash-outline" size={25} color='#ff3f4b' />
-                </TouchableOpacity>
+                {
+                    items.length === 0 && (
+
+                        <TouchableOpacity onPress={handleDeleteTable}>
+                            <Ionicons name="trash-outline" size={25} color='#ff3f4b' />
+                        </TouchableOpacity>
+                    )
+                }
             </View>
 
             {category.length !== 0 && (//se meu array da category for diferente de 0
@@ -245,7 +262,7 @@ export default function Order() {
                 style={{ flex: 1, marginTop: 24 }}
                 data={items}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <ListItem data={item} />}
+                renderItem={({ item }) => <ListItem data={item} deleteItem={handleDeleteItem} />}
             />
 
 

@@ -1,13 +1,16 @@
 import Modal from 'react-modal';
 import styles from './styles.module.scss';
-import React, {useEffect} from 'react'
+import React, { useEffect, FormEvent, useState } from 'react'
+import { toast } from 'react-toastify'
+import { setupAPIClient } from '../../../services/api';
 
 import { FiX } from 'react-icons/fi'
 
 interface ModalSizeProps {
     isOpen: boolean;
     onRequestClose: () => void;
-    getCaregoryName: string
+    getCaregoryName: string;
+    getCategoryId: string;
     //category: Order
     // order: OrderItemProps[];
 
@@ -19,12 +22,11 @@ export type ModalProps = {
     name: string
 }
 
-export function ModalSizeCategory({ isOpen, onRequestClose, getCaregoryName/*, order, handleFinishOrder */}: ModalSizeProps) {
+export function ModalSizeCategory({ isOpen, onRequestClose, getCaregoryName, getCategoryId/*, order, handleFinishOrder */ }: ModalSizeProps) {
 
-    useEffect(()=>{
-        console.log(getCaregoryName)
-        
-    },[])
+    const [nameSize, setNameSize] = useState('')
+
+    const apiClient = setupAPIClient();
 
     const customStyles = {
         content: {
@@ -38,11 +40,31 @@ export function ModalSizeCategory({ isOpen, onRequestClose, getCaregoryName/*, o
         }
     };
 
+    async function handleAddSizeCategory(event: FormEvent) {
+        event.preventDefault();
+
+        if (nameSize === '') {
+            toast.warning("Preencha um tamanho para a categoria!!")
+            return;
+        }
+
+        try {
+            await apiClient.post('/size', {
+                name: nameSize,
+                category_id: getCategoryId//passando o id da categoria
+            })
+            setNameSize('')
+            toast.success("Tamanho cadastrado!")
+        } catch (error) {
+            console.log("Erro ao cadastrar categoria: " + error)
+        }
+
+    }
+
     return (
         <Modal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            //getCaregoryName={getCaregoryName}
             style={customStyles}
         >
 
@@ -60,21 +82,21 @@ export function ModalSizeCategory({ isOpen, onRequestClose, getCaregoryName/*, o
                 <h2>Cadastro de Tamanho da categoria:</h2>
                 <span className={styles.table}>
                     Categoria: <strong>{getCaregoryName}</strong>
-                    <span>Aqui vai o campo para ir salvando os tamanho chamando a rota pra isso</span>
-                    {/* Mesa: <strong>{order[0].order.table}</strong> */}
                 </span>
 
-                {/* {order.map(item => (
-                    <section key={item.id} className={styles.containerItem}>
-                        <span>{item.amount} - <strong>{item.product.name}</strong></span>
-                        <span className={styles.description}>{item.product.description}</span>
-                    </section>
-                ))} */}
+                <form className={styles.areaForm} onSubmit={handleAddSizeCategory}>
 
-                {/* <button className={styles.finishedOrder} onClick={() => {handleFinishOrder(order[0].order_id) }}> */}
-                <button className={styles.finishedOrder} >
-                    Cadastrar Tamanho
-                </button>
+                    <input
+                        placeholder='Ex. Copo, JARRA, P, M, G, GG, U'
+                        className={styles.input}
+                        value={nameSize}
+                        onChange={(e) => setNameSize(e.target.value.toUpperCase())}
+                    />
+
+                    <button className={styles.finishedOrder} >
+                        Cadastrar Tamanho
+                    </button>
+                </form>
 
             </div>
 
