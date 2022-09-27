@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import {
     View, Text, StyleSheet, SafeAreaView,
-    TouchableOpacity, TextInput, Modal
+    TouchableOpacity, TextInput, Modal, FlatList
 } from 'react-native'
+import { AuthContext } from '../../contexts/AuthContext'
 
 import { useRoute, RouteProp } from '@react-navigation/native'//importa para pegar os dados que estão no navigate
 import { Ionicons } from '@expo/vector-icons'
@@ -11,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { ModalPicker } from '../../components/ModalPicker'
 
 import { api } from '../../services/api'
+import { ListItem } from '../../components/ListItem'
 
 
 
@@ -29,12 +31,18 @@ export type CategoryProps = {//tipando os dados da categoria
 export type ProductProps = {//tipagem de produtos
     id: string;
     name: string;
-    price: number | string;
+    // price: number | string;
 }
 
 export type SizeProps = {
-    id: string,
-    name: string
+    id: string;
+    name: string;
+}
+export type ItemsProps = {
+    id: string;
+    product_id: string;
+    name: string;
+    amount: string | number;
 }
 
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
@@ -52,11 +60,16 @@ export default function Order() {
 
     const [size, setSize] = useState<SizeProps[] | []>([])
     const [selectedSize, setSelectedSize] = useState<SizeProps | undefined>()
+    const [idCatGet, setidCatGet] = useState('')
 
     const [amount, setAmount] = useState('1')
+    const [items, setItems] = useState<ItemsProps[]>([])
 
     const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
+    const [modalProductVisible, setModalProductVisible] = useState(false)
     const [modalSizeVisible, setModalSizeVisible] = useState(false)
+
+    const { signOut } = useContext(AuthContext)
 
     const route = useRoute<OrderTypeProps>()
 
@@ -66,11 +79,12 @@ export default function Order() {
 
             setCategory(response.data)//passando reponse para o state 
             setSelectedCategory(response.data[0])
+
         }
-        async function loadSize(){
-            //AQUI VAI A ROTA PARA FILTRAR O TAMANHO PELA CATEGORIA ESCOLHIDA
-        }
+
         loadCategory();
+
+
     }, [])
 
     useEffect(() => {
@@ -87,6 +101,21 @@ export default function Order() {
         loadProducts();
     }, [selectedCategory])//ação do effect ao selecionar uma categoria
 
+    useEffect(() => {
+        async function loadSize() {
+            const response = await api.get('/category/size', {
+                params: {
+                    category_id: selectedCategory?.id
+                }
+            })
+
+            // setSize(response.data)
+            // setSelectedSize(response.data[0])
+            // console.log(selectedCategory?.id)
+            console.log(response.data)
+        }
+        loadSize()
+    }, [])
 
 
     async function handleDeleteTable() {
@@ -108,6 +137,32 @@ export default function Order() {
         setSelectedCategory(item)//jogando o item no state
 
     }
+
+    function handleProductSelect(item: ProductProps) {
+        setSelectedProduct(item)
+    }
+
+    // adcionando um produto nessa mesa
+    async function handleAdd() {
+        const response = await api.post('/order/add', {
+            order_id: route.params?.order_id,
+            product_id: selectedProduct?.id,
+            amount: Number(amount)
+        })
+
+        let data = {
+            id: response.data.id,
+            product_id: selectedProduct?.id as string,
+            name: selectedProduct?.name as string,
+            amount: amount
+        }
+
+
+        setItems(oldArray => [...oldArray, data])
+
+
+    }
+
 
 
     return (
@@ -148,14 +203,18 @@ export default function Order() {
             </View>
 
 
-            <TouchableOpacity style={styles.input}>
-                <Text style={styles.textInput}>{selectedProduct?.name}</Text>
-                <Ionicons name="caret-down-outline" color='#fff' size={22} />
-            </TouchableOpacity>
+            {product.length !== 0 && (//se meu array da product for diferente de 0
+                <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible(true)}>
+                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
+                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
+                </TouchableOpacity>
+            )}
+
 
             {check && (
                 <TouchableOpacity style={styles.input}>
-                    <Text style={styles.textInput}>{selectedProduct?.price}</Text>
+                    {/* <Text style={styles.textInput}>{selectedProduct?.price}</Text> */}
+                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
                     <Ionicons name="chevron-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             )}
@@ -170,14 +229,28 @@ export default function Order() {
             </View>
 
             <View style={styles.areaBtnPlus}>
-                <TouchableOpacity style={styles.btnPlus}>
+                <TouchableOpacity style={styles.btnPlus} onPress={handleAdd}>
                     <Text style={styles.btnPlusText}>+</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btnAvancar}>
+
+                <TouchableOpacity
+                    style={[styles.btnAvancar, { opacity: items.length === 0 ? 0.3 : 1 }]}
+                    disabled={items.length === 0 ? true : false}>
                     <Text style={styles.btnAvancarText}>Avançar</Text>
                 </TouchableOpacity>
             </View>
 
+            <FlatList
+                showsVerticalScrollIndicator={false}
+                style={{ flex: 1, marginTop: 24 }}
+                data={items}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <ListItem data={item} />}
+            />
+
+
+
+            {/* Modal category */}
             <Modal
                 animationType='slide'
                 transparent={true}
@@ -187,6 +260,20 @@ export default function Order() {
                     handleClose={() => setModalCategoryVisible(false)}
                     options={category}
                     selectedItem={handleCategorySelect}
+                //dados trabalhados de dentro do comp. modalPicker
+                />
+            </Modal>
+
+            {/* Modal Product */}
+            <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalProductVisible}
+            >
+                <ModalPicker
+                    handleClose={() => setModalProductVisible(false)}
+                    options={product}
+                    selectedItem={handleProductSelect}
                 //dados trabalhados de dentro do comp. modalPicker
                 />
             </Modal>

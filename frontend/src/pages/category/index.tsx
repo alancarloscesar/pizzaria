@@ -33,7 +33,7 @@ export default function Category() {
             toast.success("Categoria cadastrarda com sucesso!")
             setVisibleModal(true)
             setName("")
-            setCategoryName(response.data)
+            setCategoryName(response.data.name)
 
 
         } catch (error) {

@@ -9,13 +9,14 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 //criar migration
 //yarn prisma migrate dev
 model User {
-  id String @id @default(uuid())//id com primary key
-  name String
-  email String
-  password String
+  id         String    @id @default(uuid()) //id com primary key
+  name       String
+  email      String
+  password   String
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
@@ -23,71 +24,71 @@ model User {
 }
 
 model Category {
-  id String @id @default(uuid())
-  name String
+  id         String    @id @default(uuid())
+  name       String
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
+  products   Product[]
+  sizes      Size[]
 
   @@map("categories")
-  products Product[]
-  sizes Size[]
 }
 
 model Product {
-  id String @id @default(uuid())
-  name String
-  price String
+  id          String    @id @default(uuid())
+  name        String
+  price       String
   description String?
-  banner String?
-  tamanho String?
-  created_at DateTime? @default(now())
-  updated_at DateTime? @default(now())
+  banner      String?
+  tamanho     String?
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
 
-  category Category @relation(fields: [category_id], references: [id])
+  category    Category @relation(fields: [category_id], references: [id])
+  category_id String
+  items       Item[]
 
   @@map("products")
-  category_id String
-  items Item[]
 }
 
 model Order {
-  id String @id @default(uuid())
-  table Int
+  id     String  @id @default(uuid())
+  table  Int
   status Boolean @default(false)
-  draft Boolean @default(true)
-  name String?
+  draft  Boolean @default(true)
+  name   String?
 
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
+  items      Item[]
 
   @@map("orders")
-  items Item[]
 }
 
 model Item {
-  id String @id @default(uuid())
+  id     String @id @default(uuid())
   amount Int
 
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
-  order Order @relation(fields: [order_id], references: [id])
-  product Product @relation(fields: [product_id], references: [id])
+  order      Order   @relation(fields: [order_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+  order_id   String
+  product_id String
 
   @@map("items")
-  order_id String
-  product_id String
 }
 
 model Size {
-  id String @id @default(uuid())
+  id   String @id @default(uuid())
   name String
 
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
-  category Category @relation(fields: [category_id], references: [id])
+  category    Category @relation(fields: [category_id], references: [id])
+  category_id String
 
   @@map("sizes")
-  category_id String
 }

@@ -60,6 +60,7 @@ export function ModalSizeCategory({ isOpen, onRequestClose, getCaregoryName/*, o
                 <h2>Cadastro de Tamanho da categoria:</h2>
                 <span className={styles.table}>
                     Categoria: <strong>{getCaregoryName}</strong>
+                    <span>Aqui vai o campo para ir salvando os tamanho chamando a rota pra isso</span>
                     {/* Mesa: <strong>{order[0].order.table}</strong> */}
                 </span>
 
