@@ -12,8 +12,8 @@ interface productRequest{
 class CreateProductService{
     async execute({name, price, description, banner, category_id, tamanho}: productRequest){
 
-        if(name === '' || price === '' || description === '' || category_id === ''){
-            throw new Error("os campos com asteriscos * são obrigatorios seu preenchimento");
+        if(name === '' || price === ''){
+            throw new Error("os campos são obrigatorios");
         }else{
 
             const verifyNameProduct = await prismaClient.product.findFirst({
