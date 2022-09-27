@@ -38,6 +38,7 @@
     color: var(--white);
     text-align: center;
     text-transform: uppercase;
+    border: 1px solid #252552;
 
     &::placeholder {
         color: rgba(255, 255, 255, 0.096);
@@ -48,17 +49,47 @@
 }
 
 .finishedOrder {
-    background-color: var(--dark-900);
+    background-color: var(--green-900);
     border: 0;
-    color: var(--green-900);
+    color: #101026;
     padding: 0.5rem;
     border-radius: .4rem;
     height: 2.2rem;
     width: 40%;
+    font-weight: bold;
+}
+
+@media (max-width: 1000px) {
+    .container {
+        width: 70vw;
+    }
 }
 
 @media (max-width: 610px) {
     .container {
         width: 70vw;
     }
+}
+@media (max-width: 560px) {
+    .container {
+        width: 70vw;
+
+        h2 {
+            text-align: center;
+        }
+    }
+    .areaForm {
+        display: flex;
+        flex-direction: column;
+    
+        //justify-content: space-between;
+        align-items: center;
+        padding: 2rem 0;
+    }
+    .input, .finishedOrder{
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+
 }
