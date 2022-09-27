@@ -109,13 +109,13 @@ export default function Order() {
                 }
             })
 
-            // setSize(response.data)
-            // setSelectedSize(response.data[0])
+            setSize(response.data)
+            setSelectedSize(response.data[0])
             // console.log(selectedCategory?.id)
-            console.log(response.data)
+            //console.log(response.data)
         }
         loadSize()
-    }, [])
+    }, [selectedCategory])
 
 
     async function handleDeleteTable() {
@@ -130,7 +130,6 @@ export default function Order() {
         } catch (error) {
             console.log("Erro ao excluir mesa -> " + error)
         }
-
     }
 
     function handleCategorySelect(item: CategoryProps) {//seleciona o item do modal
@@ -140,6 +139,10 @@ export default function Order() {
 
     function handleProductSelect(item: ProductProps) {
         setSelectedProduct(item)
+    }
+
+    function handleSizeSelect(item: SizeProps) {
+        setSelectedSize(item)
     }
 
     // adcionando um produto nessa mesa
@@ -213,8 +216,11 @@ export default function Order() {
 
                     <Text style={{ fontSize: 17, color: '#fff', marginLeft: 10 }}>2 sabores</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.input, { width: '60%', alignItems: 'center' }]}>
-                    <Text style={styles.textInput}>M</Text>
+                <TouchableOpacity
+                    style={[styles.input, { width: '60%', alignItems: 'center' }]}
+                    onPress={() => setModalSizeVisible(true)}
+                >
+                    <Text style={styles.textInput}>{selectedSize?.name}</Text>
                     <Ionicons name="caret-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             </View>
@@ -242,6 +248,7 @@ export default function Order() {
                     style={[styles.input, { width: '60%', textAlign: 'center' }]}
                     value={amount}
                     onChangeText={setAmount}
+                    keyboardType='numeric'
                 />
             </View>
 
@@ -295,6 +302,20 @@ export default function Order() {
                 />
             </Modal>
 
+            {/* Modal Size */}
+            <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalSizeVisible}
+            >
+                <ModalPicker
+                    handleClose={() => setModalSizeVisible(false)}
+                    options={size}
+                    selectedItem={handleSizeSelect}
+                //dados trabalhados de dentro do comp. modalPicker
+                />
+            </Modal>
+
         </SafeAreaView>
     )
 }
@@ -340,7 +361,7 @@ const styles = StyleSheet.create({
     areaQtd: {
         flexDirection: 'row',
         justifyContent: "space-between",
-        maxHeight: '10%',
+        maxHeight: 100,
         alignItems: 'center',
         marginBottom: 5,
     },
@@ -356,7 +377,7 @@ const styles = StyleSheet.create({
     areaBtnPlus: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        height: '7%',
+        height: 40,
     },
     btnPlus: {
         backgroundColor: '#3fd1ff',
