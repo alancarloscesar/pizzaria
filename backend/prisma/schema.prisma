@@ -80,6 +80,7 @@ model Item {
   product    Product @relation(fields: [product_id], references: [id])
   order_id   String
   product_id String
+  price String?
 
   @@map("items")
 }

@@ -13,6 +13,7 @@ import { ListCategoryController } from "./controllers/category/ListCategoryContr
 
 import { CreateProductController } from "./controllers/product/CreateProductController";
 import { ListByCategoryController } from "./controllers/product/ListByCategoryController";
+import { FindPriceProductController } from "./controllers/product/FindPriceProductController";
 
 import { CreateOrderController } from "./controllers/order/CreateOrderController";
 import { RemoveOrderController } from "./controllers/order/RemoveOrderController";
@@ -40,6 +41,7 @@ router.get('/me',isAuthenticated ,new DetailUserController().handle)//rota para 
 //------ ROTAS CATEGORY ------
 router.post('/category', isAuthenticated, new CreateCategoryController().handle)//rota para criar categoria
 router.get('/category', isAuthenticated, new ListCategoryController().handle)//rota para listar categorias
+router.get('/price/name/size', isAuthenticated, new FindPriceProductController().handle)
 
 //-------ROTAS PRODUTOS------
 router.post('/product',isAuthenticated,upload.single("file"), new CreateProductController().handle)//rota para criar produto
