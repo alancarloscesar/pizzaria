@@ -12,13 +12,13 @@ import { AuthContext } from '../../contexts/AuthContext'
 export default function Dashboard() {
 
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>()
-    const { signOut, newOrder } = useContext(AuthContext)
+    const { user, signOut } = useContext(AuthContext)
 
     const [table, setTable] = useState('')
 
-    // async function teste(){
-    //     await signOut();
-    // }
+    async function teste(){
+        await signOut();
+    }
 
     async function newOrderTable() {
         if (table === '') {
@@ -26,8 +26,12 @@ export default function Dashboard() {
             return;
         }
 
+        console.log(user.id)      
+
         const response = await api.post('/order', {//requisição
-            table: Number(table)//passando o table e convertendo para numero
+            table: Number(table),//passando o table e convertendo para numero
+            garcom: user.name,
+            user_id: user.id
         })
 
         //passando os dados da tipagem do stack.screen da rota - enviando dados via navigate

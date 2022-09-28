@@ -19,6 +19,7 @@ model User {
   password   String
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
+  orders     Order[]
 
   @@map("users")
 }
@@ -57,10 +58,13 @@ model Order {
   status Boolean @default(false)
   draft  Boolean @default(true)
   name   String?
+  garcom String
+  user_id    String 
 
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
   items      Item[]
+  users       User      @relation(fields: [user_id], references: [id])
 
   @@map("orders")
 }
