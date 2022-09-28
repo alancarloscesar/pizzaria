@@ -43,6 +43,7 @@ export type ItemsProps = {
     product_id: string;
     name: string;
     amount: string | number;
+    size: string;
 }
 
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
@@ -60,7 +61,6 @@ export default function Order() {
 
     const [size, setSize] = useState<SizeProps[] | []>([])
     const [selectedSize, setSelectedSize] = useState<SizeProps | undefined>()
-    const [idCatGet, setidCatGet] = useState('')
 
     const [amount, setAmount] = useState('1')
     const [items, setItems] = useState<ItemsProps[]>([])
@@ -68,8 +68,6 @@ export default function Order() {
     const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
     const [modalProductVisible, setModalProductVisible] = useState(false)
     const [modalSizeVisible, setModalSizeVisible] = useState(false)
-
-    const { signOut } = useContext(AuthContext)
 
     const route = useRoute<OrderTypeProps>()
 
@@ -157,8 +155,10 @@ export default function Order() {
             id: response.data.id,
             product_id: selectedProduct?.id as string,
             name: selectedProduct?.name as string,
-            amount: amount
+            amount: amount,
+            size: selectedSize?.name as string
         }
+
         setItems(oldArray => [...oldArray, data])
     }
 
@@ -202,6 +202,22 @@ export default function Order() {
                 </TouchableOpacity>
             )}
 
+            {product.length !== 0 && (//se meu array da product for diferente de 0
+                <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible(true)}>
+                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
+                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
+                </TouchableOpacity>
+            )}
+
+
+            {check && (
+                <TouchableOpacity style={styles.input}>
+                    {/* <Text style={styles.textInput}>{selectedProduct?.price}</Text> */}
+                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
+                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
+                </TouchableOpacity>
+            )}
+
             <View style={styles.areaCheckTam}>
                 <TouchableOpacity style={styles.check}>
 
@@ -224,23 +240,6 @@ export default function Order() {
                     <Ionicons name="caret-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             </View>
-
-
-            {product.length !== 0 && (//se meu array da product for diferente de 0
-                <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible(true)}>
-                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
-                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
-                </TouchableOpacity>
-            )}
-
-
-            {check && (
-                <TouchableOpacity style={styles.input}>
-                    {/* <Text style={styles.textInput}>{selectedProduct?.price}</Text> */}
-                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
-                    <Ionicons name="chevron-down-outline" color='#fff' size={22} />
-                </TouchableOpacity>
-            )}
 
             <View style={styles.areaQtd}>
                 <Text style={styles.qtdText}>Quantidade: </Text>
@@ -370,7 +369,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         width: '35%',
-        textAlign: 'center',
         justifyContent: 'center',
         paddingBottom: '4%'
     },

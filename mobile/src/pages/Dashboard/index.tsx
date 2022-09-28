@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react'
-import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert } from 'react-native'
+import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { api } from '../../services/api'
+import { Feather } from '@expo/vector-icons'
 
 //importando as tipagens de navegação
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -16,7 +17,7 @@ export default function Dashboard() {
 
     const [table, setTable] = useState('')
 
-    async function teste(){
+    async function teste() {
         await signOut();
     }
 
@@ -26,7 +27,7 @@ export default function Dashboard() {
             return;
         }
 
-        console.log(user.id)      
+        console.log(user.id)
 
         const response = await api.post('/order', {//requisição
             table: Number(table),//passando o table e convertendo para numero
@@ -41,22 +42,33 @@ export default function Dashboard() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.Title}>Novo Pedido</Text>
-            <TextInput
-                placeholder='Digite o número da mesa...'
-                placeholderTextColor='#bdbbbb'
-                style={styles.TextInputContainer}
-                keyboardType={'numeric'}
-                value={table}
-                onChangeText={setTable}
-            />
+        <>
+            <View style={styles.logout}>
+                <TouchableOpacity style={styles.logoutTouch} onPress={() => signOut()}>
+                    <Feather name='power' size={20} color='#fff' style={{ marginRight: 8 }} />
+                    <Text style={{ color: '#fff', fontSize: 16 }}>Sair</Text>
+                </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.BtnContainer} onPress={newOrderTable}>
-                <Text style={styles.BtnContainerText}>Abrir Mesa</Text>
-            </TouchableOpacity>
+            <SafeAreaView style={styles.container}>
 
-        </SafeAreaView>
+
+                <Text style={styles.Title}>Novo Pedido</Text>
+                <TextInput
+                    placeholder='Digite o número da mesa...'
+                    placeholderTextColor='#bdbbbb'
+                    style={styles.TextInputContainer}
+                    keyboardType={'numeric'}
+                    value={table}
+                    onChangeText={setTable}
+                />
+
+                <TouchableOpacity style={styles.BtnContainer} onPress={newOrderTable}>
+                    <Text style={styles.BtnContainerText}>Abrir Mesa</Text>
+                </TouchableOpacity>
+
+            </SafeAreaView>
+        </>
     )
 }
 
@@ -95,5 +107,16 @@ const styles = StyleSheet.create({
     BtnContainerText: {
         fontWeight: 'bold',
         fontSize: 18
+    },
+    logout: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: "#1d1d2e",
+        justifyContent: 'flex-end',
+    },
+    logoutTouch: {
+        flexDirection: 'row',
+        paddingTop: 20,
+        paddingRight: 20,
     }
 })
