@@ -4,7 +4,7 @@ interface ItemRequest{
     order_id: string;
     product_id: string;
     amount: number;
-    price: string
+    price: number;
 }
 
 class AddItemService{
@@ -15,7 +15,7 @@ class AddItemService{
                 order_id: order_id,
                 product_id: product_id,
                 amount: amount,
-                price: price
+                price: Number(price)
             }
         })
         return item;

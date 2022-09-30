@@ -6,8 +6,9 @@ class ListByCategoryController{
         const listByCategoryService = new ListByCategoryService();
         
         const category_id = req.query.category_id as string;
+        const tamanho = req.query.tamanho as string;
 
-        const product = await listByCategoryService.execute({category_id});
+        const product = await listByCategoryService.execute({category_id, tamanho});
 
         return res.json(product)
     }

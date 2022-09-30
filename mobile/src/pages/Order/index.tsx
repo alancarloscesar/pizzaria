@@ -14,8 +14,6 @@ import { ModalPicker } from '../../components/ModalPicker'
 import { api } from '../../services/api'
 import { ListItem } from '../../components/ListItem'
 
-
-
 type RouteDetailParams = {//tipagem dos dados recebidos
     Order: {
         number: string | number,
@@ -26,17 +24,19 @@ type RouteDetailParams = {//tipagem dos dados recebidos
 export type CategoryProps = {//tipando os dados da categoria
     id: string;
     name: string;
+    price: number | string;
 }
 
 export type ProductProps = {//tipagem de produtos
     id: string;
     name: string;
-    // price: number | string;
+    price: number | string;
 }
 
 export type SizeProps = {
     id: string;
     name: string;
+    price: number | string;
 }
 export type ItemsProps = {
     id: string;
@@ -44,6 +44,7 @@ export type ItemsProps = {
     name: string;
     amount: string | number;
     size: string;
+    price: string | number;
 }
 
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
@@ -61,6 +62,7 @@ export default function Order() {
 
     const [size, setSize] = useState<SizeProps[] | []>([])
     const [selectedSize, setSelectedSize] = useState<SizeProps | undefined>()
+    const [sizeLoad, setSizeLoad] = useState('')
 
     const [amount, setAmount] = useState('1')
     const [items, setItems] = useState<ItemsProps[]>([])
@@ -71,35 +73,17 @@ export default function Order() {
 
     const route = useRoute<OrderTypeProps>()
 
-    useEffect(() => {
+    useEffect(() => {//BUSCA CATEGORIAS
         async function loadCategory() {
             const response = await api.get('/category')
 
             setCategory(response.data)//passando reponse para o state 
             setSelectedCategory(response.data[0])
-
         }
-
         loadCategory();
-
-
     }, [])
 
-    useEffect(() => {
-        async function loadProducts() {
-            const response = await api.get('/product/category', {
-                params: {
-                    category_id: selectedCategory?.id
-                }
-            })
-
-            setProduct(response.data)
-            setSelectedProduct(response.data[0])
-        }
-        loadProducts();
-    }, [selectedCategory])//ação do effect ao selecionar uma categoria
-
-    useEffect(() => {
+    useEffect(() => {//BUSCA TAMANHOS POR CATEGORIA
         async function loadSize() {
             const response = await api.get('/category/size', {
                 params: {
@@ -114,6 +98,36 @@ export default function Order() {
         }
         loadSize()
     }, [selectedCategory])
+
+    useEffect(() => {//BUSCA PRODUTOS POR CATEGORIA E TAMANHO
+        async function loadProducts() {
+            const response = await api.get('/product/category', {
+                params: {
+                    category_id: selectedCategory?.id,
+                    tamanho: selectedSize?.name
+                    //tamanho: "JARRA"
+                    //OUTRA AUTERNATIVA SERIA FILTRA POR CATEGORY_ID E SIZE_ID MAS AI TERIA QUE PEGAR O ID E SALVA COMO CAMPO DE PRODUTO
+                }
+            })
+
+            setProduct(response.data)
+            setSelectedProduct(response.data[0])
+            
+        }
+        loadProducts();
+    }, [selectedCategory, selectedSize])//ação do effect ao selecionar uma categoria
+    
+    function teste() {
+
+        const cal = Number(selectedProduct?.price) * Number(amount)
+
+        console.log("======================")
+        console.log("ID cat: "+selectedCategory?.id)
+        console.log("Preço do produto: " + selectedProduct?.price)
+        console.log("Preço calculado: " + cal)
+        console.log("Tamanho: " + selectedSize?.name)
+    }
+
 
 
     async function handleDeleteTable() {
@@ -148,7 +162,8 @@ export default function Order() {
         const response = await api.post('/order/add', {
             order_id: route.params?.order_id,
             product_id: selectedProduct?.id,
-            amount: Number(amount)
+            amount: Number(amount),
+            price: Number(selectedProduct?.price) * Number(amount)
         })
 
         let data = {
@@ -156,7 +171,8 @@ export default function Order() {
             product_id: selectedProduct?.id as string,
             name: selectedProduct?.name as string,
             amount: amount,
-            size: selectedSize?.name as string
+            size: selectedSize?.name as string,
+            price: Number(selectedProduct?.price) * Number(amount)
         }
 
         setItems(oldArray => [...oldArray, data])
@@ -175,7 +191,6 @@ export default function Order() {
         })
 
         setItems(removeItem)//atualiza flatlist
-
     }
 
 
@@ -201,23 +216,6 @@ export default function Order() {
                     <Ionicons name="caret-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             )}
-
-            {product.length !== 0 && (//se meu array da product for diferente de 0
-                <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible(true)}>
-                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
-                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
-                </TouchableOpacity>
-            )}
-
-
-            {check && (
-                <TouchableOpacity style={styles.input}>
-                    {/* <Text style={styles.textInput}>{selectedProduct?.price}</Text> */}
-                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
-                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
-                </TouchableOpacity>
-            )}
-
             <View style={styles.areaCheckTam}>
                 <TouchableOpacity style={styles.check}>
 
@@ -232,6 +230,7 @@ export default function Order() {
 
                     <Text style={{ fontSize: 17, color: '#fff', marginLeft: 10 }}>2 sabores</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                     style={[styles.input, { width: '60%', alignItems: 'center' }]}
                     onPress={() => setModalSizeVisible(true)}
@@ -241,13 +240,31 @@ export default function Order() {
                 </TouchableOpacity>
             </View>
 
+            {/* {product.length !== 0 && (//se meu array da product for diferente de 0 */}
+            <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible(true)}>
+                <Text style={styles.textInput}>{selectedProduct?.name}</Text>
+                <Ionicons name="caret-down-outline" color='#fff' size={22} />
+            </TouchableOpacity>
+            {/* )} */}
+
+
+            {check && (
+                <TouchableOpacity style={styles.input}>
+                    {/* <Text style={styles.textInput}>{selectedProduct?.price}</Text> */}
+                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
+                    <Ionicons name="caret-down-outline" color='#fff' size={22} />
+                </TouchableOpacity>
+            )}
+
+
             <View style={styles.areaQtd}>
-                <Text style={styles.qtdText}>Quantidade: </Text>
+                <Text style={styles.qtdText} onPress={teste}>Quantidade: </Text>
                 <TextInput
                     style={[styles.input, { width: '60%', textAlign: 'center' }]}
                     value={amount}
                     onChangeText={setAmount}
                     keyboardType='numeric'
+
                 />
             </View>
 
@@ -270,8 +287,6 @@ export default function Order() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <ListItem data={item} deleteItem={handleDeleteItem} />}
             />
-
-
 
             {/* Modal category */}
             <Modal
