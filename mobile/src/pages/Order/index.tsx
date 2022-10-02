@@ -24,19 +24,19 @@ type RouteDetailParams = {//tipagem dos dados recebidos
 export type CategoryProps = {//tipando os dados da categoria
     id: string;
     name: string;
-    price: number | string;
+    price: string;
 }
 
 export type ProductProps = {//tipagem de produtos
     id: string;
     name: string;
-    price: number | string;
+    price: string;
 }
 
 export type SizeProps = {
     id: string;
     name: string;
-    price: number | string;
+    price: string;
 }
 export type ItemsProps = {
     id: string;
@@ -44,7 +44,7 @@ export type ItemsProps = {
     name: string;
     amount: string | number;
     size: string;
-    price: string | number;
+    price: string;
 }
 
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
@@ -112,23 +112,10 @@ export default function Order() {
 
             setProduct(response.data)
             setSelectedProduct(response.data[0])
-            
+
         }
         loadProducts();
     }, [selectedCategory, selectedSize])//ação do effect ao selecionar uma categoria
-    
-    function teste() {
-
-        const cal = Number(selectedProduct?.price) * Number(amount)
-
-        console.log("======================")
-        console.log("ID cat: "+selectedCategory?.id)
-        console.log("Preço do produto: " + selectedProduct?.price)
-        console.log("Preço calculado: " + cal)
-        console.log("Tamanho: " + selectedSize?.name)
-    }
-
-
 
     async function handleDeleteTable() {
 
@@ -159,11 +146,15 @@ export default function Order() {
 
     // adcionando um produto nessa mesa
     async function handleAdd() {
+
+        const itemPrice = Number(selectedProduct?.price) * Number(amount)
+
         const response = await api.post('/order/add', {
             order_id: route.params?.order_id,
             product_id: selectedProduct?.id,
             amount: Number(amount),
-            price: Number(selectedProduct?.price) * Number(amount)
+            price: itemPrice.toString()
+
         })
 
         let data = {
@@ -172,7 +163,7 @@ export default function Order() {
             name: selectedProduct?.name as string,
             amount: amount,
             size: selectedSize?.name as string,
-            price: Number(selectedProduct?.price) * Number(amount)
+            price: itemPrice.toString()
         }
 
         setItems(oldArray => [...oldArray, data])
@@ -258,7 +249,7 @@ export default function Order() {
 
 
             <View style={styles.areaQtd}>
-                <Text style={styles.qtdText} onPress={teste}>Quantidade: </Text>
+                <Text style={styles.qtdText}>Quantidade: </Text>
                 <TextInput
                     style={[styles.input, { width: '60%', textAlign: 'center' }]}
                     value={amount}

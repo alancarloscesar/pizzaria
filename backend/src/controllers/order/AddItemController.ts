@@ -13,6 +13,7 @@ class AddItemController{
             amount,
             price
         })
+
         return res.json(item)
     }
 }
