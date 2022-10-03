@@ -1,25 +1,18 @@
 import prismaClient from "../../prisma";
 
-interface priceRequest{
-    name: string;
-    tamanho: string
+interface priceRequest {
+    order_id: string;
 }
 
-class FindPriceProductService{
-    async execute({name, tamanho}: priceRequest){
-        const price = await prismaClient.product.findMany({
-            where:{
-                name: name,
-                tamanho: tamanho
-            },
-            select:{
-                name: true,
-                tamanho: true,
-                price: true
+class FindPriceProductService {
+    async execute({ order_id }: priceRequest) {
+        const itemPrice = await prismaClient.item.findMany({
+            where: {
+                order_id: order_id
             }
         })
-        return price;
+        return (itemPrice)
     }
 }
 
-export {FindPriceProductService}
+export { FindPriceProductService }

@@ -27,8 +27,6 @@ export default function Dashboard() {
             return;
         }
 
-        console.log(user.id)
-
         const response = await api.post('/order', {//requisição
             table: Number(table),//passando o table e convertendo para numero
             garcom: user.name,

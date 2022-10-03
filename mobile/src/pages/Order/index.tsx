@@ -46,6 +46,12 @@ export type ItemsProps = {
     size: string;
     price: string;
 }
+export type ItemsPropsConta = {
+    price: string | number;
+}
+
+
+
 
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
 
@@ -66,6 +72,7 @@ export default function Order() {
 
     const [amount, setAmount] = useState('1')
     const [items, setItems] = useState<ItemsProps[]>([])
+    const [itemConta, setItemConta] = useState<ItemsPropsConta[]>([])
 
     const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
     const [modalProductVisible, setModalProductVisible] = useState(false)
@@ -105,8 +112,6 @@ export default function Order() {
                 params: {
                     category_id: selectedCategory?.id,
                     tamanho: selectedSize?.name
-                    //tamanho: "JARRA"
-                    //OUTRA AUTERNATIVA SERIA FILTRA POR CATEGORY_ID E SIZE_ID MAS AI TERIA QUE PEGAR O ID E SALVA COMO CAMPO DE PRODUTO
                 }
             })
 
@@ -184,6 +189,28 @@ export default function Order() {
         setItems(removeItem)//atualiza flatlist
     }
 
+    async function handleNext() {
+        const response = await api.get('/price/name/size', {
+            params: {
+                order_id: route.params?.order_id
+            }
+        })
+
+        setItemConta(response.data)//passano response para o state
+
+
+        //calculando a soma dos items
+        const somaItems = itemConta.reduce((a, b) => a + Number(b.price), 0);
+
+        const comissao = itemConta.reduce((a, b) => a + Number(b.price) * 0.1, 0);
+
+        const comissaoConta = itemConta.reduce((a, b) => a + Number(b.price) + Number(b.price) * 0.1, 0);
+
+        console.log("Valor da conta: " + somaItems)
+        console.log("Valor da conta + 10%: " + comissaoConta)
+        console.log("Valor dos 10%: " + comissao)
+
+    }
 
 
     return (
@@ -266,7 +293,9 @@ export default function Order() {
 
                 <TouchableOpacity
                     style={[styles.btnAvancar, { opacity: items.length === 0 ? 0.3 : 1 }]}
-                    disabled={items.length === 0 ? true : false}>
+                    disabled={items.length === 0 ? true : false}
+                    onPress={handleNext}
+                >
                     <Text style={styles.btnAvancarText}>Avançar</Text>
                 </TouchableOpacity>
             </View>
