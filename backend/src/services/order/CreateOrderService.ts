@@ -1,16 +1,27 @@
 import prismaClient from "../../prisma";
 
-interface OrderRequest{
+interface OrderRequest {
     name: string
     table: number
     user_id: string
     garcom: string
 }
 
-class CreateOrderService{
-    async execute({name, table,garcom, user_id}: OrderRequest){
+class CreateOrderService {
+    async execute({ name, table, garcom, user_id }: OrderRequest) {
+
+        const verifyDraft = await prismaClient.order.findFirst({
+            where: {
+                table: table,
+                draft: true
+            }
+        })
+
+        if (verifyDraft) {
+            throw new Error("Esta mesa está sendo utilizada no momento!!")
+        }
         const order = await prismaClient.order.create({
-            data:{
+            data: {
                 name: name,
                 table: table,
                 garcom: garcom,
@@ -21,4 +32,4 @@ class CreateOrderService{
     }
 }
 
-export {CreateOrderService}
+export { CreateOrderService }

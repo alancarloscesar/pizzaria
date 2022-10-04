@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert, View } from 'react-native'
+import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert, View, YellowBox } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { api } from '../../services/api'
 import { Feather } from '@expo/vector-icons'
@@ -12,14 +12,12 @@ import { AuthContext } from '../../contexts/AuthContext'
 
 export default function Dashboard() {
 
+    // console.disableYellowBox = true;
+
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>()
     const { user, signOut } = useContext(AuthContext)
 
     const [table, setTable] = useState('')
-
-    async function teste() {
-        await signOut();
-    }
 
     async function newOrderTable() {
         if (table === '') {
@@ -27,16 +25,31 @@ export default function Dashboard() {
             return;
         }
 
-        const response = await api.post('/order', {//requisição
-            table: Number(table),//passando o table e convertendo para numero
-            garcom: user.name,
-            user_id: user.id
-        })
+        try {
+            const response = await api.post('/order', {//requisição
+                table: Number(table),//passando o table e convertendo para numero
+                garcom: user.name,
+                user_id: user.id
+            })
 
-        //passando os dados da tipagem do stack.screen da rota - enviando dados via navigate
-        navigation.navigate('Order', { number: table, order_id: response.data.id })//passando os dados
+            //passando os dados da tipagem do stack.screen da rota - enviando dados via navigate
+            navigation.navigate('Order', { number: table, order_id: response.data.id })//passando os dados
 
-        setTable('')
+            setTable('')
+
+
+        } catch (error) {
+            console.log(error)
+        }
+
+        // catch ((error) => {
+        //     if (error.response) {
+        //         console.log(error.response.data);
+        //         console.log(error.response.headers);
+        //     }
+        // });
+
+
     }
 
     return (

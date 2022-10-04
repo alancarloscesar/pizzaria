@@ -252,11 +252,11 @@ export default function Order() {
 
         if (somaItems === 0) {
             Alert.alert(
-                "Atenção",
-                "Clique em 'FINALIZAR'"
-            )
+                "Confira o pedido e pressione 'FINALIZAR'"
+
+            );
             setgetTextBtnNext('Finalizar')
-            return
+
         } else {
 
             Alert.alert(
@@ -276,7 +276,6 @@ export default function Order() {
         }
     }
 
-
     async function handleAddAcount(somaItems: number, comissao: number, comissaoConta: number) {
         try {
             const response = await api.post('/order/account', {
@@ -286,8 +285,17 @@ export default function Order() {
                 garcom: user.name.toString(),
                 order_id: route.params.order_id,
                 user_id: user.id
+
             })
 
+            await api.put('/order/send', {
+
+                order_id: route.params.order_id
+
+            })
+
+             navigation.goBack();//voltar uma pagina
+          
         } catch (error) {
             console.log("Erro ao avançar: " + error)
         }
