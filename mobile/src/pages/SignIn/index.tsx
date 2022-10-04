@@ -15,9 +15,9 @@ export default function SignIn() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const { signIn,loadingAuth } = useContext(AuthContext)
+    const { signIn, loadingAuth } = useContext(AuthContext)
 
-    
+
 
     async function handleLogin() {
         if (password === '' || email === '') {
@@ -47,7 +47,7 @@ export default function SignIn() {
             <View style={styles.areaPassword}>
                 <TextInput
                     style={styles.inputPass}
-                    secureTextEntry={visible ? true : false}
+                    secureTextEntry={visible ? false : true}
                     placeholder="Digite sua senha..."
                     placeholderTextColor='#fff'
                     value={password}
@@ -66,9 +66,9 @@ export default function SignIn() {
 
             <TouchableOpacity style={styles.btn} onPress={handleLogin}>
                 {
-                    loadingAuth 
-                    ? <ActivityIndicator size={25} color='#fff'/>
-                    : <Text style={styles.btnText}>Acessar</Text>
+                    loadingAuth
+                        ? <ActivityIndicator size={25} color='#fff' />
+                        : <Text style={styles.btnText}>Acessar</Text>
                 }
             </TouchableOpacity>
         </View>

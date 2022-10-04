@@ -27,6 +27,8 @@ import { FinishOrderController } from "./controllers/order/FinishOrderController
 import { AddSizeCategoryController } from "./controllers/size/addSizeCategoryController";
 import { ListSizeCategoryController } from "./controllers/size/ListSizeCategory";
 
+import { OrderAccountController } from "./controllers/orderAccount/OrderAccountController";
+
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 const router = Router();
@@ -34,9 +36,9 @@ const router = Router();
 const upload = multer(uploadConfig.upload("./tmp"))
 
 //---- ROTAS USER -----
-router.post('/users',new CreateUserController().handle)//rota criar user
+router.post('/users', new CreateUserController().handle)//rota criar user
 router.post('/session', new AuthUserController().handle)//rota fazer login
-router.get('/me',isAuthenticated ,new DetailUserController().handle)//rota para detalhes de usuario
+router.get('/me', isAuthenticated, new DetailUserController().handle)//rota para detalhes de usuario
 
 //------ ROTAS CATEGORY ------
 router.post('/category', isAuthenticated, new CreateCategoryController().handle)//rota para criar categoria
@@ -44,7 +46,7 @@ router.get('/category', isAuthenticated, new ListCategoryController().handle)//r
 router.get('/price/name/size', isAuthenticated, new FindPriceProductController().handle)
 
 //-------ROTAS PRODUTOS------
-router.post('/product',isAuthenticated,upload.single("file"), new CreateProductController().handle)//rota para criar produto
+router.post('/product', isAuthenticated, upload.single("file"), new CreateProductController().handle)//rota para criar produto
 router.get('/product/category', isAuthenticated, new ListByCategoryController().handle)//rota para filtrar produto por categoria
 
 //-------ROTAS PEDIDO - ORDER------
@@ -61,5 +63,8 @@ router.put('/order/finish', isAuthenticated, new FinishOrderController().handle)
 router.post('/size', isAuthenticated, new AddSizeCategoryController().handle)
 router.get('/category/size', isAuthenticated, new ListSizeCategoryController().handle)
 
+//-------------ROTAS PARA FINALIZAR A ORDER-------------
+router.post('/order/account', isAuthenticated, new OrderAccountController().handle)
 
-export {router}
+
+export { router }

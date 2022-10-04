@@ -13,14 +13,14 @@ datasource db {
 //criar migration
 //yarn prisma migrate dev
 model User {
-  id         String    @id @default(uuid()) //id com primary key
-  name       String
-  email      String
-  password   String
-  created_at DateTime? @default(now())
-  updated_at DateTime? @default(now())
-  orders     Order[]
-  contas     Conta[]
+  id            String         @id @default(uuid()) //id com primary key
+  name          String
+  email         String
+  password      String
+  created_at    DateTime?      @default(now())
+  updated_at    DateTime?      @default(now())
+  orders        Order[]
+  orderAccounts OrderAccount[]
 
   @@map("users")
 }
@@ -62,11 +62,11 @@ model Order {
   garcom  String
   user_id String
 
-  created_at DateTime? @default(now())
-  updated_at DateTime? @default(now())
-  items      Item[]
-  contas     Conta[]
-  users      User      @relation(fields: [user_id], references: [id])
+  created_at    DateTime?      @default(now())
+  updated_at    DateTime?      @default(now())
+  items         Item[]
+  orderAccounts OrderAccount[]
+  users         User           @relation(fields: [user_id], references: [id])
 
   @@map("orders")
 }
@@ -101,18 +101,18 @@ model Size {
   @@map("sizes")
 }
 
-model Conta {
+model OrderAccount {
   id             String    @id @default(uuid())
   valor_conta    String
   conta_comissao String
   valor_comissao String
-  data           DateTime? @default(now())
+  created_at     DateTime? @default(now())
   garcom         String
+  order_id       String
+  user_id        String
 
-  Order   Order?  @relation(fields: [orderId], references: [id])
-  orderId String?
-  User    User?   @relation(fields: [userId], references: [id])
-  userId  String?
+  order Order @relation(fields: [order_id], references: [id])
+  user  User  @relation(fields: [user_id], references: [id])
 
-  @@map("contas")
+  @@map("orderAccounts")
 }

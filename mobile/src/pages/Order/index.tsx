@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import {
     View, Text, StyleSheet, SafeAreaView,
-    TouchableOpacity, TextInput, Modal, FlatList
+    TouchableOpacity, TextInput, Modal, FlatList, Alert
 } from 'react-native'
 import { AuthContext } from '../../contexts/AuthContext'
 
@@ -28,6 +28,11 @@ export type CategoryProps = {//tipando os dados da categoria
 }
 
 export type ProductProps = {//tipagem de produtos
+    id: string;
+    name: string;
+    price: string;
+}
+export type Product2Props = {//tipagem de produtos
     id: string;
     name: string;
     price: string;
@@ -66,6 +71,9 @@ export default function Order() {
     const [product, setProduct] = useState<ProductProps[] | []>([])
     const [selectedProduct, setSelectedProduct] = useState<ProductProps | undefined>()
 
+    const [product2, setProduct2] = useState<Product2Props[] | []>([])
+    const [selectedProduct2, setSelectedProduct2] = useState<Product2Props | undefined>()
+
     const [size, setSize] = useState<SizeProps[] | []>([])
     const [selectedSize, setSelectedSize] = useState<SizeProps | undefined>()
     const [sizeLoad, setSizeLoad] = useState('')
@@ -76,9 +84,14 @@ export default function Order() {
 
     const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
     const [modalProductVisible, setModalProductVisible] = useState(false)
+    const [modalProductVisible2, setModalProductVisible2] = useState(false)
     const [modalSizeVisible, setModalSizeVisible] = useState(false)
 
+    const [getTextBtnNext, setgetTextBtnNext] = useState('Avançar')
+
     const route = useRoute<OrderTypeProps>()
+
+    const { user } = useContext(AuthContext)
 
     useEffect(() => {//BUSCA CATEGORIAS
         async function loadCategory() {
@@ -118,6 +131,9 @@ export default function Order() {
             setProduct(response.data)
             setSelectedProduct(response.data[0])
 
+            setProduct2(response.data)
+            setSelectedProduct2(response.data[0])
+
         }
         loadProducts();
     }, [selectedCategory, selectedSize])//ação do effect ao selecionar uma categoria
@@ -145,6 +161,10 @@ export default function Order() {
         setSelectedProduct(item)
     }
 
+    function handleProductSelect2(item: Product2Props) {
+        setSelectedProduct2(item)
+    }
+
     function handleSizeSelect(item: SizeProps) {
         setSelectedSize(item)
     }
@@ -152,26 +172,51 @@ export default function Order() {
     // adcionando um produto nessa mesa
     async function handleAdd() {
 
-        const itemPrice = Number(selectedProduct?.price) * Number(amount)
+        if (check) {
+            const itemPrice = Number(selectedProduct?.price) * Number(amount)
+            const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
 
-        const response = await api.post('/order/add', {
-            order_id: route.params?.order_id,
-            product_id: selectedProduct?.id,
-            amount: Number(amount),
-            price: itemPrice.toString()
+            const response = await api.post('/order/add', {
+                order_id: route.params?.order_id,
+                product_id: selectedProduct?.id,
+                amount: Number(amount),
+                price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+            })
 
-        })
+            let data = {
+                id: response.data.id,
+                product_id: selectedProduct?.id as string,
+                name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                amount: amount,
+                size: selectedSize?.name as string,
+                price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+            }
 
-        let data = {
-            id: response.data.id,
-            product_id: selectedProduct?.id as string,
-            name: selectedProduct?.name as string,
-            amount: amount,
-            size: selectedSize?.name as string,
-            price: itemPrice.toString()
+            console.log(data.price)
+
+            setItems(oldArray => [...oldArray, data])
+        } else {
+            const itemPrice = Number(selectedProduct?.price) * Number(amount)
+
+            const response = await api.post('/order/add', {
+                order_id: route.params?.order_id,
+                product_id: selectedProduct?.id,
+                amount: Number(amount),
+                price: itemPrice.toString()
+            })
+
+            let data = {
+                id: response.data.id,
+                product_id: selectedProduct?.id as string,
+                name: selectedProduct?.name as string,
+                amount: amount,
+                size: selectedSize?.name as string,
+                price: itemPrice.toString()
+            }
+
+            setItems(oldArray => [...oldArray, data])
         }
 
-        setItems(oldArray => [...oldArray, data])
     }
 
     //função para deletar o item da flatlist e bd
@@ -198,7 +243,6 @@ export default function Order() {
 
         setItemConta(response.data)//passano response para o state
 
-
         //calculando a soma dos items
         const somaItems = itemConta.reduce((a, b) => a + Number(b.price), 0);
 
@@ -206,10 +250,47 @@ export default function Order() {
 
         const comissaoConta = itemConta.reduce((a, b) => a + Number(b.price) + Number(b.price) * 0.1, 0);
 
-        console.log("Valor da conta: " + somaItems)
-        console.log("Valor da conta + 10%: " + comissaoConta)
-        console.log("Valor dos 10%: " + comissao)
+        if (somaItems === 0) {
+            Alert.alert(
+                "Atenção",
+                "Clique em 'FINALIZAR'"
+            )
+            setgetTextBtnNext('Finalizar')
+            return
+        } else {
 
+            Alert.alert(
+                "Deseja finalizar o pedido?",
+                `MESA: ${route.params.number}`,
+                [
+                    {
+                        text: "NÃO",
+                        style: "cancel"
+                    },
+                    {
+                        text: "SIM",
+                        onPress: () => handleAddAcount(somaItems, comissao, comissaoConta)
+                    }
+                ]
+            );
+        }
+    }
+
+
+    async function handleAddAcount(somaItems: number, comissao: number, comissaoConta: number) {
+        try {
+            const response = await api.post('/order/account', {
+                valor_conta: somaItems.toFixed(2).toString(),
+                conta_comissao: comissaoConta.toFixed(2).toString(),
+                valor_comissao: comissao.toFixed(2).toString(),
+                garcom: user.name.toString(),
+                order_id: route.params.order_id,
+                user_id: user.id
+            })
+
+        } catch (error) {
+            console.log("Erro ao avançar: " + error)
+        }
     }
 
 
@@ -234,6 +315,7 @@ export default function Order() {
                     <Ionicons name="caret-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             )}
+
             <View style={styles.areaCheckTam}>
                 <TouchableOpacity style={styles.check}>
 
@@ -258,6 +340,7 @@ export default function Order() {
                 </TouchableOpacity>
             </View>
 
+
             {/* {product.length !== 0 && (//se meu array da product for diferente de 0 */}
             <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible(true)}>
                 <Text style={styles.textInput}>{selectedProduct?.name}</Text>
@@ -267,9 +350,8 @@ export default function Order() {
 
 
             {check && (
-                <TouchableOpacity style={styles.input}>
-                    {/* <Text style={styles.textInput}>{selectedProduct?.price}</Text> */}
-                    <Text style={styles.textInput}>{selectedProduct?.name}</Text>
+                <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible2(true)}>
+                    <Text style={styles.textInput}>{selectedProduct2?.name}</Text>
                     <Ionicons name="caret-down-outline" color='#fff' size={22} />
                 </TouchableOpacity>
             )}
@@ -296,7 +378,7 @@ export default function Order() {
                     disabled={items.length === 0 ? true : false}
                     onPress={handleNext}
                 >
-                    <Text style={styles.btnAvancarText}>Avançar</Text>
+                    <Text style={styles.btnAvancarText}>{getTextBtnNext}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -332,6 +414,20 @@ export default function Order() {
                     handleClose={() => setModalProductVisible(false)}
                     options={product}
                     selectedItem={handleProductSelect}
+                //dados trabalhados de dentro do comp. modalPicker
+                />
+            </Modal>
+
+            {/* Modal Product 2 */}
+            <Modal
+                animationType='slide'
+                transparent={true}
+                visible={modalProductVisible2}
+            >
+                <ModalPicker
+                    handleClose={() => setModalProductVisible2(false)}
+                    options={product2}
+                    selectedItem={handleProductSelect2}
                 //dados trabalhados de dentro do comp. modalPicker
                 />
             </Modal>

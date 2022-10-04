@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#101026',
         marginBottom: 10,
-        height: 40,
+        height: 50,
         paddingHorizontal: 15,
         borderRadius: 6,
         borderWidth: 1,
@@ -48,5 +48,6 @@ const styles = StyleSheet.create({
     item: {
         fontSize: 14,
         color: '#fff',
+        maxWidth:'90%'
     }
 })
