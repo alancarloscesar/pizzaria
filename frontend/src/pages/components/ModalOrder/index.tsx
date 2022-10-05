@@ -56,12 +56,19 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
 
                 {order.map(item => (
                     <section key={item.id} className={styles.containerItem}>
-                        <span>{item.amount} - <strong>{item.product.name}</strong></span>
-                        <span className={styles.description}>{item.product.description}</span>
+                        <span>{item.amount}x - <strong>{item.product.name} </strong>- {item.product.tamanho}</span>
+                        <span className={styles.description}>{item.product.price} R$</span>
+                        <span className={styles.description}>Garçom: {item.order.garcom}</span>
                     </section>
                 ))}
+                
+                <br></br>
+                <h2>Total: 67 R$</h2>
 
-                <button className={styles.finishedOrder} onClick={() => {handleFinishOrder(order[0].order_id) }}>
+                {/* calcular o preço para mostrar */}
+
+
+                <button className={styles.finishedOrder} onClick={() => { handleFinishOrder(order[0].order_id) }}>
                     Concluir Pedido
                 </button>
 

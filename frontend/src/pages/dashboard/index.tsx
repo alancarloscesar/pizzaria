@@ -35,9 +35,11 @@ export type OrderItemProps = {
         description: string;
         price: string;
         banner: string;
+        tamanho: string;
     }
     order: {
         id: string;
+        garcom: string;
         table: string | number;
         status: boolean;
         name: string | null;

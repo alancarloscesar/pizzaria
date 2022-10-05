@@ -20,12 +20,18 @@ export default function SignIn() {
 
 
     async function handleLogin() {
-        if (password === '' || email === '') {
-            Alert.alert('Atenção', 'Preencha todos os campos!');
-            return;
-        }
+        try {
+            if (password === '' || email === '') {
+                Alert.alert('Atenção', 'Preencha todos os campos!');
+                return;
+            }
 
-        await signIn({ email, password })//chamando o signIn do contexto
+            await signIn({ email, password })//chamando o signIn do contexto
+
+        } catch (err) {
+            // Alert.alert("Email ou Senha incorretos!")
+            console.log("Erorooooo")
+        }
     }
 
     return (

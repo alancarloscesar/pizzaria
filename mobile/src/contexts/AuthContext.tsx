@@ -1,4 +1,5 @@
 import React, { useState, createContext, ReactNode, useEffect } from 'react';
+import { Alert } from 'react-native'
 import { api } from '../services/api'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -50,16 +51,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [loading, setLoading] = useState(true)//passamos o loading true, e false apos finalizar o if
 
     const isAuthenticated = !!user.name;//transformando em boolean
-    
+
     useEffect(() => {//pega o token no asyncStorage ao carregar o componente
         async function getUser() {
             const userInfo = await AsyncStorage.getItem('@smartMenu')//pegando a chave do async
             let hashUser: UserProps = JSON.parse(userInfo || '{}')//transf. string em objeto ou objeto vazio
-            
+
             // verificar se tem algo la dentro
             if (Object.keys(hashUser).length > 0) {//se tiver algo na chave
                 api.defaults.headers.common['Authorization'] = `Bearer ${hashUser.token}`//deixa como default no app o token
-                
+
                 //passamos os dados para o state user
                 setUser({
                     id: hashUser.id,
@@ -69,12 +70,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 })
 
                 setLoading(false)
-                
+
             }
-            
+
         }
         setLoading(false)
-        
+
         getUser();
     }, [])
 
@@ -103,12 +104,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 token
             })
             //no index.tsx que seria nosso controle de rotas repassamos o isAuthenticated via contexto
-            
-            setLoadingAuth(false) 
+
+            setLoadingAuth(false)
 
         } catch (error) {
-            console.log("Erro ao ecessar rota: " + error)
-            setLoadingAuth(false) 
+            setLoadingAuth(false)
+            Alert.alert("Erro de login:", `${error.response.data.error}`)
         }
     }
 
@@ -127,7 +128,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             })
     }
 
-    async function newOrder({table}:NewOrderProps){
+    async function newOrder({ table }: NewOrderProps) {
         try {
             const response = await api.post('/order', {
                 table
@@ -136,7 +137,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             console.log(data)
         } catch (error) {
-            console.log('erro ao criar mesa: ',error)
+            console.log('erro ao criar mesa: ', error)
         }
     }
 

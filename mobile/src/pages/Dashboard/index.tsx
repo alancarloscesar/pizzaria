@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert, View, YellowBox } from 'react-native'
+import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { api } from '../../services/api'
 import { Feather } from '@expo/vector-icons'
@@ -38,17 +38,12 @@ export default function Dashboard() {
             setTable('')
 
 
-        } catch (error) {
-            console.log(error)
+        } catch (err) {
+            // console.log(err.response.status);
+            // console.log(err.message);
+            // console.log(err.response.headers); 
+            Alert.alert("Atenção", `${err.response.data.error}`)
         }
-
-        // catch ((error) => {
-        //     if (error.response) {
-        //         console.log(error.response.data);
-        //         console.log(error.response.headers);
-        //     }
-        // });
-
 
     }
 

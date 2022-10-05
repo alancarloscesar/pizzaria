@@ -192,8 +192,6 @@ export default function Order() {
                 price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
             }
 
-            console.log(data.price)
-
             setItems(oldArray => [...oldArray, data])
         } else {
             const itemPrice = Number(selectedProduct?.price) * Number(amount)
@@ -294,8 +292,8 @@ export default function Order() {
 
             })
 
-             navigation.goBack();//voltar uma pagina
-          
+            navigation.goBack();//voltar uma pagina
+
         } catch (error) {
             console.log("Erro ao avançar: " + error)
         }
