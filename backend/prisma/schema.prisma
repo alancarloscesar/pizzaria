@@ -37,14 +37,13 @@ model Category {
 }
 
 model Product {
-  id          String    @id @default(uuid())
-  name        String
-  price       String
-  description String?
-  banner      String?
-  tamanho     String?
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @default(now())
+  id         String    @id @default(uuid())
+  name       String
+  price      String
+  banner     String?
+  tamanho    String?
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
 
   category    Category @relation(fields: [category_id], references: [id])
   category_id String
@@ -58,7 +57,6 @@ model Order {
   table   Int
   status  Boolean @default(false)
   draft   Boolean @default(true)
-  name    String?
   garcom  String
   user_id String
 
@@ -83,7 +81,7 @@ model Item {
   order_id   String
   product_id String
   price      String
-  draft      Boolean @default(true)
+  name       String
 
   @@map("items")
 }

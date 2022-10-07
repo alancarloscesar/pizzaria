@@ -29,6 +29,7 @@ export type OrderItemProps = {
     amount: number;
     order_id: string;
     product_id: string;
+    price: string;
     product: {
         id: string;
         name: string;
@@ -125,6 +126,7 @@ export default function Dashboard({ orders }: HomeProps) {
                                     <span>Mesa {item.table}</span>
                                 </button>
                             </section>
+                            
                         ))}
 
                     </article>

@@ -4,14 +4,13 @@ import prismaClient from "../../prisma";
 interface ProductRequest {
     name: string
     price: string
-    description: string
     banner: string
     category_id: string
     tamanho: string
 }
 
 class CreateProdService {
-    async execute({ name, price, description, banner, category_id, tamanho }: ProductRequest) {
+    async execute({ name, price, banner, category_id, tamanho }: ProductRequest) {
 
         if (name === '' || price === '') {
             throw new Error("Preencha todos os campos!")
@@ -32,7 +31,6 @@ class CreateProdService {
                     data: {
                         name: name,
                         price: price,
-                        description: description,
                         banner: banner,
                         category_id: category_id,
                         tamanho: tamanho

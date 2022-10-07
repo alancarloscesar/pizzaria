@@ -28,6 +28,7 @@ import { AddSizeCategoryController } from "./controllers/size/addSizeCategoryCon
 import { ListSizeCategoryController } from "./controllers/size/ListSizeCategory";
 
 import { OrderAccountController } from "./controllers/orderAccount/OrderAccountController";
+import { FindAccountTableController } from "./controllers/orderAccount/FindAccountTableController";
 
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 
@@ -65,6 +66,7 @@ router.get('/category/size', isAuthenticated, new ListSizeCategoryController().h
 
 //-------------ROTAS PARA FINALIZAR A ORDER-------------
 router.post('/order/account', isAuthenticated, new OrderAccountController().handle)
+router.get('/order/account', isAuthenticated, new FindAccountTableController().handle)
 
 
 export { router }

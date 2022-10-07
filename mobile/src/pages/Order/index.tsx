@@ -180,7 +180,8 @@ export default function Order() {
                 order_id: route.params?.order_id,
                 product_id: selectedProduct?.id,
                 amount: Number(amount),
-                price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+                price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
             })
 
             let data = {
@@ -200,7 +201,8 @@ export default function Order() {
                 order_id: route.params?.order_id,
                 product_id: selectedProduct?.id,
                 amount: Number(amount),
-                price: itemPrice.toString()
+                price: itemPrice.toString(),
+                name: selectedProduct?.name
             })
 
             let data = {
@@ -209,7 +211,7 @@ export default function Order() {
                 name: selectedProduct?.name as string,
                 amount: amount,
                 size: selectedSize?.name as string,
-                price: itemPrice.toString()
+                price: itemPrice.toString(),
             }
 
             setItems(oldArray => [...oldArray, data])
