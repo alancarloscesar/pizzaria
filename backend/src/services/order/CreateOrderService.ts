@@ -15,10 +15,12 @@ class CreateOrderService {
                 draft: true
             }
         })
-
+        
         if (verifyDraft) {
             throw new Error("Esta mesa está sendo utilizada no momento!!")
         }
+       
+
         const order = await prismaClient.order.create({
             data: {
                 table: table,
@@ -27,6 +29,7 @@ class CreateOrderService {
             }
         })
         return order;
+
     }
 }
 

@@ -55,8 +55,12 @@ export type ItemsPropsConta = {
     price: string | number;
 }
 
-
-
+type itemExist = {
+    amount: number;
+    price: string;
+    name: string;
+    // tamanho
+}
 
 type OrderTypeProps = RouteProp<RouteDetailParams, 'Order'>;
 
@@ -87,11 +91,28 @@ export default function Order() {
     const [modalProductVisible2, setModalProductVisible2] = useState(false)
     const [modalSizeVisible, setModalSizeVisible] = useState(false)
 
+    const [itemExist, setItemsExist] = useState<itemExist[]>()
+
     const [getTextBtnNext, setgetTextBtnNext] = useState('Avançar')
 
     const route = useRoute<OrderTypeProps>()
 
     const { user } = useContext(AuthContext)
+
+    useEffect(() => {
+        async function loadOrderExist() {//função para verificar se a mesa é uma existente para mostrar items
+            const response = await api.post('/order/exist', {
+                table: Number(route.params.number)
+            })
+            setItemsExist(response.data)
+            // console.log('=============')
+            // console.log(route.params.number)
+            // console.log(response.data)
+        }
+
+
+        loadOrderExist()
+    }, [])
 
     useEffect(() => {//BUSCA CATEGORIAS
         async function loadCategory() {
@@ -139,16 +160,19 @@ export default function Order() {
     }, [selectedCategory, selectedSize])//ação do effect ao selecionar uma categoria
 
     async function handleDeleteTable() {
-
-        try {
-            await api.delete('/order', {//requisicao de deletar 
-                params: {//params - query params
-                    order_id: route.params.order_id
-                }
-            })
-            navigation.goBack();//voltar uma pagina
-        } catch (error) {
-            console.log("Erro ao excluir mesa -> " + error)
+        if (itemExist) {//se a mesa existir so volta e não deleta
+            navigation.goBack();
+        } else {
+            try {
+                await api.delete('/order', {//requisicao de deletar 
+                    params: {//params - query params
+                        order_id: route.params.order_id
+                    }
+                })
+                navigation.goBack();//voltar uma pagina
+            } catch (error) {
+                console.log("Erro ao excluir mesa -> " + error)
+            }
         }
     }
 
@@ -171,52 +195,99 @@ export default function Order() {
 
     // adcionando um produto nessa mesa
     async function handleAdd() {
+        if (itemExist) {//se a rota /order/exist do effect identificar que a mesa é igual e ainda não foi fechada vai mostrar o que já foi pedido
+            if (check) {
+                const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
 
-        if (check) {
-            const itemPrice = Number(selectedProduct?.price) * Number(amount)
-            const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
+                const response = await api.post('/order/add', {
+                    order_id: route.params?.order_id,
+                    product_id: selectedProduct?.id,
+                    amount: Number(amount),
+                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                })
 
-            const response = await api.post('/order/add', {
-                order_id: route.params?.order_id,
-                product_id: selectedProduct?.id,
-                amount: Number(amount),
-                price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
-                name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
-            })
+                let data = {
+                    id: response.data.id,
+                    product_id: selectedProduct?.id as string,
+                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                    amount: amount,
+                    size: selectedSize?.name as string,
+                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+                }
 
-            let data = {
-                id: response.data.id,
-                product_id: selectedProduct?.id as string,
-                name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
-                amount: amount,
-                size: selectedSize?.name as string,
-                price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+                setItems(oldArray => [...oldArray, data])
+            } else {
+                const itemPrice = Number(selectedProduct?.price) * Number(amount)
+
+                const response = await api.post('/order/add', {
+                    order_id: route.params?.order_id,
+                    product_id: selectedProduct?.id,
+                    amount: Number(amount),
+                    price: itemPrice.toString(),
+                    name: selectedProduct?.name
+                })
+
+                let data = {
+                    id: response.data.id,
+                    product_id: selectedProduct?.id as string,
+                    name: selectedProduct?.name as string,
+                    amount: amount,
+                    size: selectedSize?.name as string,
+                    price: itemPrice.toString(),
+                }
+
+                setItems(oldArray => [...oldArray, data])
             }
-
-            setItems(oldArray => [...oldArray, data])
         } else {
-            const itemPrice = Number(selectedProduct?.price) * Number(amount)
 
-            const response = await api.post('/order/add', {
-                order_id: route.params?.order_id,
-                product_id: selectedProduct?.id,
-                amount: Number(amount),
-                price: itemPrice.toString(),
-                name: selectedProduct?.name
-            })
 
-            let data = {
-                id: response.data.id,
-                product_id: selectedProduct?.id as string,
-                name: selectedProduct?.name as string,
-                amount: amount,
-                size: selectedSize?.name as string,
-                price: itemPrice.toString(),
+            if (check) {
+                const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
+
+                const response = await api.post('/order/add', {
+                    order_id: route.params?.order_id,
+                    product_id: selectedProduct?.id,
+                    amount: Number(amount),
+                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                })
+
+                let data = {
+                    id: response.data.id,
+                    product_id: selectedProduct?.id as string,
+                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                    amount: amount,
+                    size: selectedSize?.name as string,
+                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+                }
+
+                setItems(oldArray => [...oldArray, data])
+            } else {
+                const itemPrice = Number(selectedProduct?.price) * Number(amount)
+
+                const response = await api.post('/order/add', {
+                    order_id: route.params?.order_id,
+                    product_id: selectedProduct?.id,
+                    amount: Number(amount),
+                    price: itemPrice.toString(),
+                    name: selectedProduct?.name
+                })
+
+                let data = {
+                    id: response.data.id,
+                    product_id: selectedProduct?.id as string,
+                    name: selectedProduct?.name as string,
+                    amount: amount,
+                    size: selectedSize?.name as string,
+                    price: itemPrice.toString(),
+                }
+
+                setItems(oldArray => [...oldArray, data])
             }
-
-            setItems(oldArray => [...oldArray, data])
         }
-
     }
 
     //função para deletar o item da flatlist e bd
@@ -252,10 +323,20 @@ export default function Order() {
 
         if (somaItems === 0) {
             Alert.alert(
-                "Confira o pedido e pressione 'FINALIZAR'"
-
+                "Confira o pedido e pressione 'FINALIZAR",
+                "",
+                [
+                    {
+                        text: "cancelar",
+                        style: "cancel"
+                    },
+                    {
+                        text: "ok",
+                        onPress: () => setgetTextBtnNext('Finalizar')
+                    }
+                ]
             );
-            setgetTextBtnNext('Finalizar')
+
 
         } else {
 
@@ -277,27 +358,48 @@ export default function Order() {
     }
 
     async function handleAddAcount(somaItems: number, comissao: number, comissaoConta: number) {
-        try {
-            const response = await api.post('/order/account', {
-                valor_conta: somaItems.toFixed(2).toString(),
-                conta_comissao: comissaoConta.toFixed(2).toString(),
-                valor_comissao: comissao.toFixed(2).toString(),
-                garcom: user.name.toString(),
-                order_id: route.params.order_id,
-                user_id: user.id
+        if (itemExist) {
+            try {
+                const response = await api.put('/account', {
 
-            })
+                    params: {
+                        order_id: route.params.order_id
+                    },
 
-            await api.put('/order/send', {
+                    valor_conta: somaItems.toString(),
+                    conta_comissao: comissaoConta.toString(),
+                    valor_comissao: comissao.toString()
 
-                order_id: route.params.order_id
+                })
 
-            })
+                navigation.goBack();//voltar uma pagina
 
-            navigation.goBack();//voltar uma pagina
+            } catch (error) {
+                console.log("Erro ao avançar: " + error)
+            }
+        } else {
+            try {
+                const response = await api.post('/order/account', {
+                    valor_conta: somaItems.toFixed(2).toString(),
+                    conta_comissao: comissaoConta.toFixed(2).toString(),
+                    valor_comissao: comissao.toFixed(2).toString(),
+                    garcom: user.name.toString(),
+                    order_id: route.params.order_id,
+                    user_id: user.id
 
-        } catch (error) {
-            console.log("Erro ao avançar: " + error)
+                })
+
+                await api.put('/order/send', {
+
+                    order_id: route.params.order_id
+
+                })
+
+                navigation.goBack();//voltar uma pagina
+
+            } catch (error) {
+                console.log("Erro ao avançar: " + error)
+            }
         }
     }
 

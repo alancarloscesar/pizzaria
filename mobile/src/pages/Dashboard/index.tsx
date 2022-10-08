@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { TextInput, Text, TouchableOpacity, SafeAreaView, StyleSheet, Alert, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { api } from '../../services/api'
 import { Feather } from '@expo/vector-icons'
+
 
 //importando as tipagens de navegação
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -10,40 +11,57 @@ import { StackParams } from '../../routes/app.routes'
 
 import { AuthContext } from '../../contexts/AuthContext'
 
+
 export default function Dashboard() {
+
+
 
     // console.disableYellowBox = true;
 
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>()
     const { user, signOut } = useContext(AuthContext)
 
-    const [table, setTable] = useState('')
-
+    const [tableS, setTableS] = useState('')
+    
     async function newOrderTable() {
-        if (table === '') {
+        if (tableS === '') {
             Alert.alert('Atenção', 'Preencha todos os campos!!!')
             return;
         }
 
-        try {
-            const response = await api.post('/order', {//requisição
-                table: Number(table),//passando o table e convertendo para numero
-                garcom: user.name,
-                user_id: user.id
-            })
+        const response = await api.get('/order/table', {
+            params: {
+                table: Number(tableS)
+            }
+        })
 
+        if (response.data !== null) {
             //passando os dados da tipagem do stack.screen da rota - enviando dados via navigate
-            navigation.navigate('Order', { number: table, order_id: response.data.id })//passando os dados
+            navigation.navigate('Order', { number: tableS, order_id: response.data.id })//passando os dados
 
-            setTable('')
+            setTableS('')
+        } else {
+            try {
+                const response = await api.post('/order', {//requisição
+                    table: Number(tableS),//passando o table e convertendo para numero
+                    garcom: user.name,
+                    user_id: user.id
+                })
+
+                //passando os dados da tipagem do stack.screen da rota - enviando dados via navigate
+                navigation.navigate('Order', { number: tableS, order_id: response.data.id })//passando os dados
+
+                setTableS('')
 
 
-        } catch (err) {
-            // console.log(err.response.status);
-            // console.log(err.message);
-            // console.log(err.response.headers); 
-            Alert.alert("Atenção", `${err.response.data.error}`)
+            } catch (err) {
+                // console.log(err.response.status);
+                // console.log(err.message);
+                // console.log(err.response.headers); 
+                Alert.alert("Atenção", `${err.response.data.error}`)
+            }
         }
+
 
     }
 
@@ -65,8 +83,8 @@ export default function Dashboard() {
                     placeholderTextColor='#bdbbbb'
                     style={styles.TextInputContainer}
                     keyboardType={'numeric'}
-                    value={table}
-                    onChangeText={setTable}
+                    value={tableS}
+                    onChangeText={setTableS}
                 />
 
                 <TouchableOpacity style={styles.BtnContainer} onPress={newOrderTable}>

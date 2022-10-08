@@ -23,12 +23,16 @@ import { SendOrderController } from "./controllers/order/SendOrderController";
 import { ListOrderController } from "./controllers/order/ListOrderController";
 import { DetailOrderController } from "./controllers/order/DetailOrderController";
 import { FinishOrderController } from "./controllers/order/FinishOrderController";
+import { OrderExistentController } from "./controllers/order/OrderExistentController";
+import { ListOrderForIdController } from "./controllers/order/ListOrderForIdController";
+import { ListOrderForTableController } from "./controllers/order/ListOrderForTableController";
 
 import { AddSizeCategoryController } from "./controllers/size/addSizeCategoryController";
 import { ListSizeCategoryController } from "./controllers/size/ListSizeCategory";
 
 import { OrderAccountController } from "./controllers/orderAccount/OrderAccountController";
 import { FindAccountTableController } from "./controllers/orderAccount/FindAccountTableController";
+import { UpdateAccountController } from "./controllers/orderAccount/UpdateAccountController";
 
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 
@@ -59,6 +63,9 @@ router.put('/order/send', isAuthenticated, new SendOrderController().handle)
 router.get('/order', isAuthenticated, new ListOrderController().handle)
 router.get('/order/detail', isAuthenticated, new DetailOrderController().handle)
 router.put('/order/finish', isAuthenticated, new FinishOrderController().handle)
+router.post('/order/exist', isAuthenticated, new OrderExistentController().handle)
+router.get('/order/id', isAuthenticated, new ListOrderForIdController().handle)
+router.get('/order/table', isAuthenticated, new ListOrderForTableController().handle)
 
 //-------------ROTAS PARA O TAMANHO SIZE---------
 router.post('/size', isAuthenticated, new AddSizeCategoryController().handle)
@@ -67,6 +74,7 @@ router.get('/category/size', isAuthenticated, new ListSizeCategoryController().h
 //-------------ROTAS PARA FINALIZAR A ORDER-------------
 router.post('/order/account', isAuthenticated, new OrderAccountController().handle)
 router.get('/order/account', isAuthenticated, new FindAccountTableController().handle)
+router.put('/account', isAuthenticated, new UpdateAccountController().handle)
 
 
 export { router }

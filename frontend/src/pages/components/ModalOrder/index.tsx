@@ -5,6 +5,7 @@ import { FiX } from 'react-icons/fi'
 import { useState, useEffect } from 'react'
 import { OrderItemProps } from '../../../pages/dashboard'
 import { setupAPIClient } from '../../../services/api'
+import ReactSwitch from 'react-switch';
 
 interface ModalOrderProps {
     isOpen: boolean;
@@ -32,6 +33,7 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
     const [dataOrder, setDataOrder] = useState<OrderItemProps[]>()
     const [dataAccount, setDataAccount] = useState<AccountProps>()
     const [dataItems, setDataItem] = useState<ItemProps>()
+    const [checked, setChecked] = useState(true)
 
 
     const customStyles = {
@@ -71,6 +73,10 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
 
     }, [])
 
+    const handleChange = nextChecked => {
+        setChecked(nextChecked);
+    };
+
     return (
         <Modal
             isOpen={isOpen}
@@ -105,7 +111,17 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
                     ))}
 
                     <section className={styles.footer}>
-                        <h2 style={{ fontWeight: 100 }}>Total: <strong>{dataAccount?.conta_comissao}</strong></h2>
+                        <div className={styles.area10percent}>
+                            <h3>+10% ?</h3>
+                            <ReactSwitch
+                                onChange={handleChange}
+                                checked={checked}
+                                className="react-switch"
+                                onColor='#3fffa3'
+                            />
+                        </div>
+
+                        <h2 style={{ fontWeight: 100, marginLeft: 25 }}>Total: <strong>{checked ? dataAccount?.conta_comissao : dataAccount?.valor_conta}</strong></h2>
                     </section>
 
                 </main>

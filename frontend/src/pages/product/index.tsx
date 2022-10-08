@@ -38,9 +38,9 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
     const [sizes, setSizes] = useState(sizeList || [])
     const [sizeResponse, setSizeResponse] = useState(0)
 
-    useEffect(()=>{
+    useEffect(() => {
         loadSizeCategory()
-    },[])
+    }, [])
 
     //selecionando categoria
     function handleChangeCategory(event) {

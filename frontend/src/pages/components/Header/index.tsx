@@ -19,8 +19,16 @@ export default function Header() {
                     <a>Categoria</a>
                 </Link>
 
+                <Link href='/sizes'>
+                    <a>Tamanho</a>
+                </Link>
+
                 <Link href='/product'>
                     <a>Cardápio</a>
+                </Link>
+
+                <Link href='/product'>
+                    <a>Relatório</a>
                 </Link>
 
                 <button onClick={signOut}>
