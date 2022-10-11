@@ -7,6 +7,7 @@ import uploadConfig from './config/multer'
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { AuthUserController } from "./controllers/user/AuthUserController";
 import { DetailUserController } from "./controllers/user/DetailUserController";
+import { ListNameUserController } from "./controllers/user/ListNameUserController";
 
 import { CreateCategoryController } from "./controllers/category/CreateCategoryController";
 import { ListCategoryController } from "./controllers/category/ListCategoryController";
@@ -46,6 +47,7 @@ const upload = multer(uploadConfig.upload("./tmp"))
 router.post('/users', new CreateUserController().handle)//rota criar user
 router.post('/session', new AuthUserController().handle)//rota fazer login
 router.get('/me', isAuthenticated, new DetailUserController().handle)//rota para detalhes de usuario
+router.get('/user/name', isAuthenticated, new ListNameUserController().handle)
 
 //------ ROTAS CATEGORY ------
 router.post('/category', isAuthenticated, new CreateCategoryController().handle)//rota para criar categoria
