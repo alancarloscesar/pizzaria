@@ -4,7 +4,8 @@ interface orderAccountRequest {
     valor_conta: string;
     conta_comissao: string;
     valor_comissao: string;
-    order_id: string
+    order_id: string;
+   
 }
 
 class UpdateAccountService {

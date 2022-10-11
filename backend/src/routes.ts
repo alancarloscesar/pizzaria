@@ -34,6 +34,8 @@ import { OrderAccountController } from "./controllers/orderAccount/OrderAccountC
 import { FindAccountTableController } from "./controllers/orderAccount/FindAccountTableController";
 import { UpdateAccountController } from "./controllers/orderAccount/UpdateAccountController";
 
+import { ReportCommissionController } from "./controllers/report/ReportCommissionController";
+
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 const router = Router();
@@ -75,6 +77,9 @@ router.get('/category/size', isAuthenticated, new ListSizeCategoryController().h
 router.post('/order/account', isAuthenticated, new OrderAccountController().handle)
 router.get('/order/account', isAuthenticated, new FindAccountTableController().handle)
 router.put('/account', isAuthenticated, new UpdateAccountController().handle)
+
+//-------------ROTAS PARA RELATORIO DE COMISSOES-----------
+router.post('/report', isAuthenticated, new ReportCommissionController().handle)
 
 
 export { router }

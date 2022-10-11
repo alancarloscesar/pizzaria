@@ -196,7 +196,7 @@ export default function Order() {
     // adcionando um produto nessa mesa
     async function handleAdd() {
         if (itemExist) {//se a rota /order/exist do effect identificar que a mesa é igual e ainda não foi fechada vai mostrar o que já foi pedido
-            if (check) {
+            if (check) {//se for 2 sabores
                 const itemPrice = Number(selectedProduct?.price) * Number(amount)
                 const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
 
@@ -361,14 +361,11 @@ export default function Order() {
         if (itemExist) {
             try {
                 const response = await api.put('/account', {
+                    order_id: route.params.order_id,
 
-                    params: {
-                        order_id: route.params.order_id
-                    },
-
-                    valor_conta: somaItems.toString(),
-                    conta_comissao: comissaoConta.toString(),
-                    valor_comissao: comissao.toString()
+                    valor_conta: somaItems.toFixed(2).toString(),
+                    conta_comissao: comissaoConta.toFixed(2).toString(),
+                    valor_comissao: comissao.toFixed(2).toString()
 
                 })
 

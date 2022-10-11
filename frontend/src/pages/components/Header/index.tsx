@@ -27,7 +27,7 @@ export default function Header() {
                     <a>Cardápio</a>
                 </Link>
 
-                <Link href='/product'>
+                <Link href='/report'>
                     <a>Relatório</a>
                 </Link>
 
