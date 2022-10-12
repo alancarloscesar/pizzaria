@@ -15,9 +15,19 @@ registerLocale('pt', pt)
 import { setupAPIClient } from "../../services/api";
 import { AuthContext } from "../../contexts/AuthContext";
 
+import { PDFDownloadLink, View } from '@react-pdf/renderer'
+import { Page, Text, Image, Document, StyleSheet } from "@react-pdf/renderer";
+
+
+
+
+//ReactPDF.render(<MyDocument />, `${__dirname}/example.pdf`);
+
 interface contaProps {
     id: string;
     valor_comissao: string | number;
+    created_at: string;
+    garcom: string;
 }
 
 
@@ -27,15 +37,13 @@ export default function Report() {
     const [userList, setUserList] = useState([]);
     const [userSelected, setUserSelected] = useState(0)
     const [comissao, setComissao] = useState<contaProps[]>([])
+    const [dataReport, setDataReport] = useState<contaProps[]>([])
+    const [valorTotalComissao, setValorTotal] = useState('')
 
     setDefaultLocale('pt');
-
     const api = setupAPIClient();
-    const { user } = useContext(AuthContext)
-
 
     useEffect(() => {
-
 
         loadUser();
 
@@ -60,6 +68,10 @@ export default function Report() {
         })
         const somaItems = response.data.reduce((a, b) => a + Number(b.valor_comissao), 0);
         setComissao(somaItems)
+        setValorTotal(somaItems)
+
+        setDataReport(response.data)
+
         console.log("+++++++++++ " + comissao)
 
 
@@ -69,17 +81,119 @@ export default function Report() {
         console.log("Data final + 1 dia: " + dayPlusFormat)
         console.log("Garçom: " + userSelected)
 
-        
-        
+
+
     }
     //selecionando categoria
     function handleChangeGarcom(event) {
         setUserSelected(event.target.value)
     }
 
+    const stylesPdf = StyleSheet.create({
+        body: {
+            paddingTop: 35,
+            paddingBottom: 65,
+            paddingHorizontal: 35,
+        },
+        areaTitulo: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        },
+        title: {
+            fontSize: 24,
+            textAlign: "center",
+        },
+        line: {
+            border: 1,
+            borderColor: 'grey',
+            marginVertical: 30
+        },
+        areaDados: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            color: 'grey',
+            marginVertical: 10
+        },
+        text: {
+            margin: 12,
+            fontSize: 11,
+            textAlign: "justify",
+            fontFamily: "Times-Roman",
+        },
+        image: {
+            width: 130,
+            height: 120
+        },
+        header: {
+            fontSize: 25,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            textAlign: "center",
+            color: "grey",
+        },
+        pageNumber: {
+            position: "absolute",
+            fontSize: 12,
+            bottom: 30,
+            left: 0,
+            right: 0,
+            textAlign: "center",
+            color: "grey",
+        },
+    });
+
+    //COMPONENTE DO PDF
+    const PDFFiles = () => {
+        return (
+            <Document>
+                <Page style={stylesPdf.body}>
+                    <View style={stylesPdf.areaTitulo}>
+                        <Text style={stylesPdf.header} fixed>Relatório de Comissões</Text>
+                        <Image style={stylesPdf.image} src="/logopdf.png" />
+                    </View>
+                    <View style={stylesPdf.line} />
+
+                    <View style={stylesPdf.areaDados}>
+                        <Text>Garçom: {userSelected}</Text>
+                        <Text>Data Inicial: {format(dataInicial, 'dd/MM/yyyy')}</Text>
+                        <Text>Data Final: {format(dataFinal, 'dd/MM/yyyy')}</Text>
+                    </View>
+
+                    <View>
+                        {
+                            dataReport.map((item) => (
+                                <View key={item.id}>
+                                    {/* <Text>Data do atendimento: {format(item.created_at, 'dd/MM/yyyy kk:mm:ss')}</Text> */}
+                                    <View style={stylesPdf.line} />
+                                    <Text>Data do atendimento: {item.created_at}</Text>
+                                    <Text>Valor Comissão: {item.valor_comissao}</Text>
+                                    <Text>Garçom: {item.garcom}</Text>
+                                </View>
+                            ))
+                        }
+                    </View>
+
+                    <View style={stylesPdf.line} />
+                    <Text style={{ textAlign: 'right' }}>Valor Total: {valorTotalComissao} R$</Text>
+
+                    <Text
+                        style={stylesPdf.pageNumber}
+                        render={({ pageNumber, totalPages }) =>
+                            `${pageNumber} / ${totalPages}`
+                        }
+                    />
+                </Page>
+            </Document>
+        );
+    };
+
+
     return (
         <>
             <Header />
+
+
 
             <main className={styles.container}>
 
@@ -111,14 +225,14 @@ export default function Report() {
                     <article>
                         <h3>Garçom:</h3>
                         <select value={userSelected} onChange={handleChangeGarcom} onClick={loadUser}
-                           >
+                        >
                             {
                                 userList.map((item) => (
                                     <option onClick={loadUser} key={item.id}>{item.name}</option>
                                 ))
                             }
                         </select>
-                        
+
                     </article>
 
                     <button
@@ -150,17 +264,24 @@ export default function Report() {
                         </main>
 
                         <footer>
-                            {
-                                comissao.toString() !== '' && (
+                            <PDFDownloadLink document={<PDFFiles />} fileName="Comissões">
+                                {({ loading }) => loading ? (
+                                    'Carregando...'
+                                ) : (
                                     <button>Imprimir</button>
-                                )
-                            }
+                                )}
+                            </PDFDownloadLink>
+                            {/* <button>Imprimir</button> */}
+
                         </footer>
 
                     </div>
                 </section>
 
             </main>
+
+
         </>
     )
 }
+
