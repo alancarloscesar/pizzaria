@@ -84,14 +84,26 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
             style={customStyles}
         >
 
-            <button
-                type="button"
-                onClick={onRequestClose}
-                className="react-modal-close"
-                style={{ background: 'transparent', border: 0 }}
-            >
-                <FiX size={45} color="#f34748" />
-            </button>
+            <div className={styles.area10percent}>
+                <button
+                    type="button"
+                    onClick={onRequestClose}
+                    className="react-modal-close"
+                    style={{ background: 'transparent', border: 0 }}
+                >
+                    <FiX size={45} color="#f34748" />
+                </button>
+
+                <div className={styles.switch}>
+                    <h3>+10% ?</h3>
+                    <ReactSwitch
+                        onChange={handleChange}
+                        checked={checked}
+                        className="react-switch"
+                        onColor='#3fffa3'
+                    />
+                </div>
+            </div>
 
             <div className={styles.container}>
 
@@ -111,15 +123,7 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
                     ))}
 
                     <section className={styles.footer}>
-                        <div className={styles.area10percent}>
-                            <h3>+10% ?</h3>
-                            <ReactSwitch
-                                onChange={handleChange}
-                                checked={checked}
-                                className="react-switch"
-                                onColor='#3fffa3'
-                            />
-                        </div>
+
 
                         <h2 style={{ fontWeight: 100, marginLeft: 25 }}>Total: <strong>{checked ? dataAccount?.conta_comissao : dataAccount?.valor_conta}</strong></h2>
                     </section>

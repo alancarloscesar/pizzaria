@@ -44,6 +44,8 @@ model Product {
   tamanho    String?
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
+  estoque    String? 
+  quantidade Int?
 
   category    Category @relation(fields: [category_id], references: [id])
   category_id String

@@ -15,6 +15,8 @@ import { ListCategoryController } from "./controllers/category/ListCategoryContr
 import { CreateProductController } from "./controllers/product/CreateProductController";
 import { ListByCategoryController } from "./controllers/product/ListByCategoryController";
 import { FindPriceProductController } from "./controllers/product/FindPriceProductController";
+import { EstockProductQtdController } from "./controllers/product/EstockProductQtdController";
+import { EstockProductQtdPriceController } from "./controllers/product/EstockProductQtdPriceController";
 
 import { CreateOrderController } from "./controllers/order/CreateOrderController";
 import { RemoveOrderController } from "./controllers/order/RemoveOrderController";
@@ -57,6 +59,9 @@ router.get('/price/name/size', isAuthenticated, new FindPriceProductController()
 //-------ROTAS PRODUTOS------
 router.post('/product', isAuthenticated, upload.single("file"), new CreateProductController().handle)//rota para criar produto
 router.get('/product/category', isAuthenticated, new ListByCategoryController().handle)//rota para filtrar produto por categoria
+router.put('/product/update', isAuthenticated, new EstockProductQtdController().handle)
+router.put('/product/estock', isAuthenticated, new EstockProductQtdPriceController().handle)
+
 
 //-------ROTAS PEDIDO - ORDER------
 router.post('/order', isAuthenticated, new CreateOrderController().handle)

@@ -6,7 +6,7 @@ import styles from './styles.module.scss'
 import { FiUpload } from 'react-icons/fi'
 import { setupAPIClient } from "../../services/api"
 import { toast } from "react-toastify"
-import Category from "../category"
+import ReactSwitch, { ReactSwitchProps } from 'react-switch'
 
 type ItemProps = {
     id: string;
@@ -28,6 +28,8 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
     const [preco, setPreco] = useState('')
     const [tamanho, setTamanho] = useState('')
     const [descricao, setDescricao] = useState('')
+    const [qtd, setQtd] = useState('')
+
 
     const [avatarUrl, setAvatarUrl] = useState('');
     const [imageAvatar, setImageAvatar] = useState(null)
@@ -37,6 +39,8 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
 
     const [sizes, setSizes] = useState(sizeList || [])
     const [sizeResponse, setSizeResponse] = useState(0)
+
+    const [checked, setChecked] = useState(false)
 
     useEffect(() => {
         loadSizeCategory()
@@ -79,6 +83,12 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
                 return;
             }
 
+            if (checked && qtd === '') {
+                toast.warning("O campo quantidade é obrigatório quando o estoque estiver marcardo!!")
+                return;
+            }
+
+
             const data = new FormData();//para trabalhar quando usa multipart no insomnia
 
             data.append('name', name.toUpperCase())
@@ -86,7 +96,9 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
             data.append('description', descricao)
             data.append('file', imageAvatar)
             data.append('category_id', categories[categorySelected].id)
-            data.append('tamanho', sizes[sizeResponse].name)//sempre maiuscula
+            data.append('tamanho', sizes[sizeResponse].name.toUpperCase())//sempre maiuscula
+            data.append('estoque', checked ? "true" : "false")
+            data.append('quantidade', qtd)
 
             await apiClient.post('/product', data);
 
@@ -111,6 +123,10 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
         //console.log(response.data)
         setSizes(response.data)
     }
+
+    const handleChange = nextChecked => {
+        setChecked(nextChecked);
+    };
 
     return (
         <>
@@ -169,20 +185,43 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
                             placeholder="Preço do produto..."
                             value={preco}
                             onChange={(e) => setPreco(e.target.value)}
+                            type="number"
                         />
 
-                        <select value={sizeResponse} onChange={handleSize}>
-                            {
-                                sizes.map((item, index) => {
-                                    return (
-                                        <option key={item.id} value={index}>
-                                            {item.name}
-                                        </option>
-                                    )
-                                })
-                            }
+                        <div className={styles.Areaswitch}>
+                            <select value={sizeResponse} onChange={handleSize}>
+                                {
+                                    sizes.map((item, index) => {
+                                        return (
+                                            <option key={item.id} value={index}>
+                                                {item.name}
+                                            </option>
+                                        )
+                                    })
+                                }
 
-                        </select>
+                            </select>
+
+                            <div className={styles.switch}>
+                                <h3>Estoque ?</h3>
+                                <ReactSwitch
+                                    onChange={handleChange}
+                                    checked={checked}
+                                    className="react-switch"
+                                    onColor='#3fffa3'
+                                />
+                            </div>
+                        </div>
+
+                        {checked && (
+                            <input
+                                className={styles.inputsData}
+                                placeholder="Qtd..."
+                                value={qtd}
+                                onChange={(e) => setQtd(e.target.value)}
+                                type="number"
+                            />
+                        )}
 
                         <textarea
                             placeholder="Descrição do produto..."

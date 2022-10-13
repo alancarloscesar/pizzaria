@@ -107,7 +107,7 @@ export default function Report() {
         line: {
             border: 1,
             borderColor: 'grey',
-            marginVertical: 30
+            marginVertical: 10
         },
         areaDados: {
             flexDirection: 'row',
@@ -116,7 +116,7 @@ export default function Report() {
             marginVertical: 10
         },
         text: {
-            margin: 12,
+            margin: 5,
             fontSize: 11,
             textAlign: "justify",
             fontFamily: "Times-Roman",
@@ -164,9 +164,8 @@ export default function Report() {
                         {
                             dataReport.map((item) => (
                                 <View key={item.id}>
-                                    {/* <Text>Data do atendimento: {format(item.created_at, 'dd/MM/yyyy kk:mm:ss')}</Text> */}
                                     <View style={stylesPdf.line} />
-                                    <Text>Data do atendimento: {item.created_at}</Text>
+                                    <Text>Data do atendimento: {format(new Date(item.created_at), 'dd/MM/yyyy kk:mm:ss')}</Text>
                                     <Text>Valor Comissão: {item.valor_comissao}</Text>
                                     <Text>Garçom: {item.garcom}</Text>
                                 </View>
@@ -200,7 +199,7 @@ export default function Report() {
                 <section className={styles.areaPicker}>
 
                     <article>
-                        <h3 onClick={() => alert(userSelected)}>Data Inicial:</h3>
+                        <h3>Data Inicial:</h3>
                         <DatePicker
                             selected={dataInicial}
                             onChange={(date: Date) => setDataInicial(date)}

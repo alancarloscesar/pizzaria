@@ -28,7 +28,7 @@ export default function Header() {
                 </Link>
 
                 <Link href='/report'>
-                    <a>Relatório</a>
+                    <a>Comissões</a>
                 </Link>
 
                 <button onClick={signOut}>
