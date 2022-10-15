@@ -130,7 +130,6 @@ export default function Dashboard({ orders }: HomeProps) {
                         ))}
 
                     </article>
-
                 </main>
 
                 {modalVisible && (

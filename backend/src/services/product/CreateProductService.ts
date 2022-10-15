@@ -8,10 +8,11 @@ interface productRequest {
     tamanho: string
     estoque: string
     quantidade: number
+    pertencente: string
 }
 
 class CreateProductService {
-    async execute({ name, price, banner, category_id, tamanho, estoque, quantidade }: productRequest) {
+    async execute({ name, price, banner, category_id, tamanho, estoque, quantidade, pertencente }: productRequest) {
 
         if (name === '' || price === '') {
             throw new Error("os campos são obrigatorios");
@@ -35,7 +36,9 @@ class CreateProductService {
                     category_id: category_id,
                     tamanho: tamanho,
                     estoque: estoque,
-                    quantidade: Number(quantidade)
+                    quantidade: Number(quantidade),
+                    pertencente: pertencente
+
                 }
             })
             return product;

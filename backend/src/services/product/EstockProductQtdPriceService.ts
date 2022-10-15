@@ -29,18 +29,19 @@ class EstockProductQtdPriceService {
                 }
             })
             return estock
-        } else {
-            const estock = await prismaClient.product.updateMany({
-                where: {
-                    name: name,
-                    tamanho: tamanho
-                },
-                data: {
-                    price: price
-                }
-            })
-            return estock
-        }
+        } 
+        // else {
+        //     const estock = await prismaClient.product.updateMany({
+        //         where: {
+        //             name: name,
+        //             tamanho: tamanho
+        //         },
+        //         data: {
+        //             price: price
+        //         }
+        //     })
+        //     return estock
+        // }
 
     }
 }

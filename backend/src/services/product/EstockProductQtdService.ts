@@ -1,22 +1,22 @@
 import prismaClient from "../../prisma";
 
 interface estoqueRequest {
-    quantidade: number;
+    price: string;
     name: string;
     tamanho: string;
 }
 
 class EstockProductQtdService {
-    async execute({ name, tamanho, quantidade }: estoqueRequest) {
+    async execute({ name, tamanho, price }: estoqueRequest) {
 
         const estock = await prismaClient.product.updateMany({
             where: {
-                estoque: "true",
+                estoque: "false",
                 name: name,
                 tamanho: tamanho
             },
             data: {
-                quantidade: quantidade
+                price: price
             }
         })
         return estock

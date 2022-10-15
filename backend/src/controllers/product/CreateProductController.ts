@@ -3,7 +3,7 @@ import { CreateProductService } from "../../services/product/CreateProductServic
 
 class CreateProductController {
     async handle(req: Request, res: Response) {
-        const { name, price, category_id, tamanho, estoque, quantidade } = req.body
+        const { name, price, category_id, tamanho, estoque, quantidade, pertencente } = req.body
         const createProductService = new CreateProductService();
 
         if (!req.file) {//se não vier nada de img 
@@ -15,7 +15,8 @@ class CreateProductController {
                 category_id,
                 tamanho,
                 estoque,
-                quantidade
+                quantidade,
+                pertencente
             });
 
             return res.json(product)
@@ -29,7 +30,8 @@ class CreateProductController {
                 category_id,
                 tamanho,
                 estoque,
-                quantidade
+                quantidade,
+                pertencente
             });
 
             return res.json(product)

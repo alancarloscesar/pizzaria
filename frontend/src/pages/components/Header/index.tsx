@@ -27,6 +27,10 @@ export default function Header() {
                     <a>Cardápio</a>
                 </Link>
 
+                <Link href='/entrada'>
+                    <a>Entrada</a>
+                </Link>
+
                 <Link href='/report'>
                     <a>Comissões</a>
                 </Link>

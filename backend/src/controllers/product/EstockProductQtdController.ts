@@ -5,12 +5,12 @@ class EstockProductQtdController{
     async handle(req: Request, res: Response){
         const estock = new EstockProductQtdService()
 
-        const {name, tamanho, quantidade} = req.body;
+        const {name, tamanho, price} = req.body;
 
         const updateEstoque = await estock.execute({
             name,
             tamanho,
-            quantidade
+            price
         })
 
         return res.json(updateEstoque)

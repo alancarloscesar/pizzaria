@@ -26,9 +26,10 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
 
     const [name, setName] = useState('')
     const [preco, setPreco] = useState('')
-    const [tamanho, setTamanho] = useState('')
-    const [descricao, setDescricao] = useState('')
+    //    const [descricao, setDescricao] = useState('')
     const [qtd, setQtd] = useState('')
+
+    const [radioCozBar, setradioCozBar] = useState('')
 
 
     const [avatarUrl, setAvatarUrl] = useState('');
@@ -93,12 +94,13 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
 
             data.append('name', name.toUpperCase())
             data.append('price', preco)
-            data.append('description', descricao)
+            // data.append('description', descricao)
             data.append('file', imageAvatar)
             data.append('category_id', categories[categorySelected].id)
             data.append('tamanho', sizes[sizeResponse].name.toUpperCase())//sempre maiuscula
             data.append('estoque', checked ? "true" : "false")
             data.append('quantidade', qtd)
+            data.append('pertencente', radioCozBar)
 
             await apiClient.post('/product', data);
 
@@ -127,6 +129,13 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
     const handleChange = nextChecked => {
         setChecked(nextChecked);
     };
+
+    function teste() {
+        console.log(radioCozBar)
+    }
+    function onChangeValue(event) {
+        setradioCozBar(event.target.value);
+    }
 
     return (
         <>
@@ -223,11 +232,27 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
                             />
                         )}
 
-                        <textarea
+                        {/* <textarea
                             placeholder="Descrição do produto..."
                             value={descricao}
                             onChange={(e) => setDescricao(e.target.value)}
-                        />
+                        /> */}
+
+                        <div onChange={onChangeValue}>
+
+
+                            <div>
+                                <input type="radio" id="huey" name="drone" value="cozinha" checked/>
+                                <label>Cozinha</label>
+                            </div>
+
+                            <div>
+                                <input type="radio" id="dewey" name="drone" value="bar" />
+                                <label>Bar</label>
+                            </div>
+                        </div>
+
+                        <button onClick={teste}>Teste</button>
 
                         <button type="submit">
                             Cadastrar

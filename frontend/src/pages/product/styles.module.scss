@@ -55,6 +55,14 @@
         border-radius: 0.3rem;
     }
 
+    // input[type=radio]:checked+label:before {
+    //     content: "\2022";
+    //     color: #f3f3f3;
+    //     font-size: 30px;
+    //     text-align: center;
+    //     line-height: 18px;
+    // }
+    
 }
 
 .Areaswitch {
@@ -82,7 +90,7 @@
     align-items: center;
     width: 40%;
 
-    h3{
+    h3 {
         color: #fff;
     }
 }
@@ -99,8 +107,8 @@
 
 .inputsData::-webkit-outer-spin-button,
 .inputsData::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .labelAvatar {
@@ -139,6 +147,8 @@
     object-fit: cover;
     border-radius: 0.3rem;
 }
+
+
 
 @media (max-width: 915px) {
     .sectionData {
