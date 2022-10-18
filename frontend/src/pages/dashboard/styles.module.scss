@@ -57,3 +57,46 @@
     border-radius: 0.3rem 0 0 0.3rem;
     margin-right: 1rem;
 }
+
+.containerCard {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card {
+    height: 60vh;
+    width: 25vw;
+    border-radius: 10px;
+    border: 1px solid #fff;
+    margin: 0 1rem;
+    cursor: pointer;
+
+    header {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 10%;
+    }
+
+    main {
+        width: 100%;
+    }
+
+    footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 37%;
+        font-size: 2rem;
+        color: #fff;
+        font-weight: 100;
+    }
+}
+
+.card:hover {
+    background-color: #101026;
+}

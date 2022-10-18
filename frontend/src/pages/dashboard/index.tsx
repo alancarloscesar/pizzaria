@@ -104,7 +104,35 @@ export default function Dashboard({ orders }: HomeProps) {
 
                 <main className={styles.container}>
 
-                    <div className={styles.containerHeader}>
+                    <div className={styles.containerCard}>
+                        <section className={styles.card}>
+
+                            <header>
+                                <img src="/cozinha.png" />
+                            </header>
+                            <main>
+                                <hr />
+                            </main>
+                            <footer>
+                                <p>COZINHA</p>
+                            </footer>
+                        </section>
+
+                        <section className={styles.card}>
+
+                            <header>
+                                <img src="/bar.png" />
+                            </header>
+                            <main>
+                                <hr />
+                            </main>
+                            <footer>
+                                <p>BAR</p>
+                            </footer>
+                        </section>
+                    </div>
+
+                    {/* <div className={styles.containerHeader}>
                         <h1>Últimos pedidos</h1>
                         <button onClick={handleRefreshOrder}>
                             <FiRefreshCcw size={25} color="#3fffa3" />
@@ -129,7 +157,10 @@ export default function Dashboard({ orders }: HomeProps) {
                             
                         ))}
 
-                    </article>
+                    </article> */}
+
+
+
                 </main>
 
                 {modalVisible && (

@@ -148,6 +148,22 @@
     border-radius: 0.3rem;
 }
 
+.areaRadioBtn{
+    display: flex;
+    flex-direction: row;
+    margin: 1rem 0;
+    // justify-content: flex-end;
+
+    div{
+        margin-right: 1rem;
+    }
+
+    label{
+        color: #fff;
+        margin-left: .5rem;
+    }
+}
+
 
 
 @media (max-width: 915px) {

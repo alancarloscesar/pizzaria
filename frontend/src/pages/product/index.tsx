@@ -84,6 +84,11 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
                 return;
             }
 
+            if (radioCozBar === '') {
+                toast.warning("selecione 'COZINHA' ou 'BAR'")
+                return;
+            } 
+
             if (checked && qtd === '') {
                 toast.warning("O campo quantidade é obrigatório quando o estoque estiver marcardo!!")
                 return;
@@ -131,10 +136,19 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
     };
 
     function teste() {
-        console.log(radioCozBar)
+        if (radioCozBar === '') {
+            console.log('nada selecionado')
+        } else {
+
+            console.log(radioCozBar)
+        }
     }
     function onChangeValue(event) {
-        setradioCozBar(event.target.value);
+        // if (radioCozBar === '') {
+        //     toast.warning("selecione 'COZINHA' ou 'BAR'")
+        // } else {
+            setradioCozBar(event.target.value);
+        // }
     }
 
     return (
@@ -238,25 +252,23 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
                             onChange={(e) => setDescricao(e.target.value)}
                         /> */}
 
-                        <div onChange={onChangeValue}>
-
-
+                        <div className={styles.areaRadioBtn}>
                             <div>
-                                <input type="radio" id="huey" name="drone" value="cozinha" checked/>
+                                <input type="radio" id="huey" name="drone" value="cozinha" onChange={onChangeValue} />
                                 <label>Cozinha</label>
                             </div>
 
                             <div>
-                                <input type="radio" id="dewey" name="drone" value="bar" />
+                                <input type="radio" id="dewey" name="drone" value="bar" onChange={onChangeValue} />
                                 <label>Bar</label>
                             </div>
                         </div>
 
-                        <button onClick={teste}>Teste</button>
-
+                        {/* <button onClick={teste}>Teste</button> */}
                         <button type="submit">
                             Cadastrar
                         </button>
+
                     </form>
                 </section>
             </main>
