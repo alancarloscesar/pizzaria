@@ -3,7 +3,7 @@ import { AddItemService } from "../../services/order/AddItemService";
 
 class AddItemController{
     async handle(req:Request, res:Response){
-        const {order_id, product_id, amount, price, name} = req.body;
+        const {order_id, product_id, amount, price, name, pertencente} = req.body;
 
         const addItemService = new AddItemService();
 
@@ -12,7 +12,8 @@ class AddItemController{
             product_id, 
             amount,
             price,
-            name
+            name,
+            pertencente
         })
 
         return res.json(item)

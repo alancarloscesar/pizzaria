@@ -34,6 +34,7 @@ export type ProductProps = {//tipagem de produtos
     price: string;
     estoque: string;
     quantidade: number;
+    pertencente: string;
 }
 export type Product2Props = {//tipagem de produtos
     id: string;
@@ -53,6 +54,7 @@ export type ItemsProps = {
     amount: string | number;
     size: string;
     price: string;
+    pertencente: string;
 }
 export type ItemsPropsConta = {
     price: string | number;
@@ -212,6 +214,7 @@ export default function Order() {
                     amount: Number(amount),
                     price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
                     name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                    pertencente: "cozinha"
                 })
 
                 let data = {
@@ -220,7 +223,8 @@ export default function Order() {
                     name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
                     amount: amount,
                     size: selectedSize?.name as string,
-                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                    pertencente: "cozinha"
                 }
 
                 setItems(oldArray => [...oldArray, data])
@@ -232,7 +236,8 @@ export default function Order() {
                     product_id: selectedProduct?.id,
                     amount: Number(amount),
                     price: itemPrice.toString(),
-                    name: selectedProduct?.name
+                    name: selectedProduct?.name,
+                    pertencente: selectedProduct?.pertencente
                 })
 
                 let data = {
@@ -242,6 +247,7 @@ export default function Order() {
                     amount: amount,
                     size: selectedSize?.name as string,
                     price: itemPrice.toString(),
+                    pertencente: selectedProduct?.pertencente
                 }
 
                 setItems(oldArray => [...oldArray, data])
@@ -259,6 +265,7 @@ export default function Order() {
                     amount: Number(amount),
                     price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
                     name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                    pertencente: "cozinha"
                 })
 
                 let data = {
@@ -267,14 +274,15 @@ export default function Order() {
                     name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
                     amount: amount,
                     size: selectedSize?.name as string,
-                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString()
+                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                    pertencente: "cozinha"
                 }
 
                 setItems(oldArray => [...oldArray, data])
             } else {
 
                 if (selectedProduct?.estoque === "true") {//SE O O PRODUTO TIVER CONTROL DE ESTOQUE
-                    
+
                     const calc = Number(selectedProduct.quantidade) - Number(amount)
 
                     if (Number(amount) > Number(selectedProduct?.quantidade)) {
@@ -295,7 +303,8 @@ export default function Order() {
                         product_id: selectedProduct?.id,
                         amount: Number(amount),
                         price: itemPrice.toString(),
-                        name: selectedProduct?.name
+                        name: selectedProduct?.name,
+                        pertencente: selectedProduct?.pertencente
                     })
 
                     let data = {
@@ -305,6 +314,7 @@ export default function Order() {
                         amount: amount,
                         size: selectedSize?.name as string,
                         price: itemPrice.toString(),
+                        pertencente: selectedProduct?.pertencente
                     }
 
                     setItems(oldArray => [...oldArray, data])
@@ -316,7 +326,8 @@ export default function Order() {
                         product_id: selectedProduct?.id,
                         amount: Number(amount),
                         price: itemPrice.toString(),
-                        name: selectedProduct?.name
+                        name: selectedProduct?.name,
+                        pertencente: selectedProduct?.pertencente
                     })
 
                     let data = {
@@ -326,6 +337,7 @@ export default function Order() {
                         amount: amount,
                         size: selectedSize?.name as string,
                         price: itemPrice.toString(),
+                        pertencente: selectedProduct?.pertencente
                     }
 
                     setItems(oldArray => [...oldArray, data])

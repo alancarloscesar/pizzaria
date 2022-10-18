@@ -85,6 +85,7 @@ model Item {
   product_id String
   price      String
   name       String
+  pertencente String?
 
   @@map("items")
 }

@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 
 import { FiX } from 'react-icons/fi'
 import { useState, useEffect } from 'react'
-import { OrderItemProps } from '../../../pages/dashboard'
+import { OrderItemProps } from '../../CozinhaDash'
 import { setupAPIClient } from '../../../services/api'
 import ReactSwitch from 'react-switch';
 
@@ -60,10 +60,10 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
 
             const resp = await setupApi.get('/order/detail', {
                 params: {
-                    order_id: order[0].order_id
+                    order_id: order[0].order_id,
+                    pertencente: "cozinha"
                 }
             })
-
 
             setDataItem(resp.data)
             setDataAccount(response.data)
