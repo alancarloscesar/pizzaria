@@ -91,22 +91,43 @@ export default function Entrada({ categoryList, sizeList, productList }: Categor
 
     async function handleUpdate() {
         if (product[produtctSelected]?.estoque === 'true') {
-            if (qtd === '' || price === '') {
-                toast.warning('Qtd e Preço são obrigatorios para este produto!')
+            if (checkedPrice) {
+                if (qtd === '' && price === '') {
+                    toast.warning('Qtd e Preço são obrigatorios para este produto!')
+                } else {
+                    await apiClient.put('/product/estock', {
+
+                        name: product[produtctSelected]?.name,
+                        tamanho: sizes[sizeResponse]?.name,
+                        quantidade: Number(product[produtctSelected]?.quantidade) + Number(qtd),
+                        price: price
+                    })
+                    toast.success('Atualizado com sucesso!!')
+                    setPrice('')
+                    setQtd('')
+                    window.location.reload();
+                }
             } else {
+                if (qtd === '') {
+                    toast.warning('Qtd é obrigatório para este produto!')
+                } else {
 
-                await apiClient.put('/product/estock', {
+                    await apiClient.put('/product/estock', {
 
-                    name: product[produtctSelected]?.name,
-                    tamanho: sizes[sizeResponse]?.name,
-                    quantidade: product[produtctSelected]?.quantidade + Number(qtd),
-                    price: price
-                })
+                        name: product[produtctSelected]?.name,
+                        tamanho: sizes[sizeResponse]?.name,
+                        quantidade: Number(product[produtctSelected]?.quantidade) + Number(qtd),
+                        price: price
+                    })
+                    toast.success('Atualizado com sucesso!!')
+                    setPrice('')
+                    window.location.reload();
+                }
             }
-            toast.success('Atualizado com sucesso!!')
+
 
         } else {
-            if (qtd === '' || price === '') {
+            if (price === '') {
                 toast.warning('Preço obrigatorio para este produto!')
             } else {
                 await apiClient.put('/product/update', {
@@ -114,12 +135,11 @@ export default function Entrada({ categoryList, sizeList, productList }: Categor
                     name: product[produtctSelected]?.name,
                     tamanho: sizes[sizeResponse]?.name,
                     price: price
-
-
                 })
             }
 
             toast.success('Atualizado com sucesso!!')
+
 
         }
     }

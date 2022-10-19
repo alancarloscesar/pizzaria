@@ -40,6 +40,8 @@ import { UpdateAccountController } from "./controllers/orderAccount/UpdateAccoun
 import { ReportCommissionController } from "./controllers/report/ReportCommissionController";
 
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { UpdateQtdProductEqualsController } from "./controllers/order/UpdateQtdProductEqualsController";
+import { ListItemController } from "./controllers/order/ListItemController";
 
 const router = Router();
 
@@ -75,6 +77,8 @@ router.put('/order/finish', isAuthenticated, new FinishOrderController().handle)
 router.post('/order/exist', isAuthenticated, new OrderExistentController().handle)
 router.get('/order/id', isAuthenticated, new ListOrderForIdController().handle)
 router.get('/order/table', isAuthenticated, new ListOrderForTableController().handle)
+router.put('/order/update', isAuthenticated, new UpdateQtdProductEqualsController().handle)
+router.get('/item/list', isAuthenticated, new ListItemController().handle)
 
 //-------------ROTAS PARA O TAMANHO SIZE---------
 router.post('/size', isAuthenticated, new AddSizeCategoryController().handle)

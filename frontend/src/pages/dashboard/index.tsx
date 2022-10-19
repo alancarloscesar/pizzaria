@@ -23,7 +23,7 @@ export default function Dashboard() {
                 <main className={styles.container}>
 
                     <div className={styles.containerCard}>
-                        <section className={styles.card} onClick={() => alert("clique")}>
+                        <section className={styles.card}>
                             <Link href='/CozinhaDash'>
                                 <a>
                                     <header>

@@ -58,6 +58,9 @@ export type ItemsProps = {
 }
 export type ItemsPropsConta = {
     price: string | number;
+    amount: string | number;
+    name: string;
+
 }
 
 type itemExist = {
@@ -79,6 +82,8 @@ export default function Order() {
 
     const [product, setProduct] = useState<ProductProps[] | []>([])
     const [selectedProduct, setSelectedProduct] = useState<ProductProps | undefined>()
+
+    const [productItem, setProductItem] = useState<ItemsPropsConta[]>([])
 
     const [product2, setProduct2] = useState<Product2Props[] | []>([])
     const [selectedProduct2, setSelectedProduct2] = useState<Product2Props | undefined>()
@@ -115,9 +120,9 @@ export default function Order() {
             // console.log(response.data)
         }
 
-
         loadOrderExist()
     }, [])
+
 
     useEffect(() => {//BUSCA CATEGORIAS
         async function loadCategory() {
@@ -164,6 +169,16 @@ export default function Order() {
         loadProducts();
     }, [selectedCategory, selectedSize])//ação do effect ao selecionar uma categoria
 
+    async function listItems() {//listar os item para calcular o amount
+        const response = await api.get('/item/list', {
+            params: {
+                order_id: route.params.order_id,
+                product_id: selectedProduct?.id
+            }
+        })
+        setProductItem(response.data)
+    }
+
 
 
     async function handleDeleteTable() {
@@ -205,80 +220,226 @@ export default function Order() {
 
         if (itemExist) {//se a rota /order/exist do effect identificar que a mesa é igual e ainda não foi fechada vai mostrar o que já foi pedido
             if (check) {//se for 2 sabores
-                const itemPrice = Number(selectedProduct?.price) * Number(amount)
-                const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
 
-                const response = await api.post('/order/add', {
-                    order_id: route.params?.order_id,
-                    product_id: selectedProduct?.id,
-                    amount: Number(amount),
-                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
-                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
-                    pertencente: "cozinha"
-                })
+                if (selectedProduct?.estoque === "true") {//SE O O PRODUTO TIVER CONTROL DE ESTOQUE
 
-                let data = {
-                    id: response.data.id,
-                    product_id: selectedProduct?.id as string,
-                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
-                    amount: amount,
-                    size: selectedSize?.name as string,
-                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
-                    pertencente: "cozinha"
+                    const calc = Number(selectedProduct.quantidade) - Number(amount)
+
+                    if (Number(amount) > Number(selectedProduct?.quantidade)) {
+                        Alert.alert("Ops...",
+                            `Não temos mais essa quantidade para este Item! - ESTOQUE - ${selectedProduct?.quantidade}`)
+                        return;
+                    }
+                    await api.put('/product/estock', {//ATUALIZA A QUANTIDADE
+                        name: selectedProduct?.name,
+                        tamanho: selectedSize?.name,
+                        quantidade: Number(calc)
+                    })
+
+                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                    const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
+
+                    const response = await api.post('/order/add', {
+                        order_id: route.params?.order_id,
+                        product_id: selectedProduct?.id,
+                        amount: Number(amount),
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        pertencente: "cozinha"
+                    })
+
+                    let data = {
+                        id: response.data.id,
+                        product_id: selectedProduct?.id as string,
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        amount: amount,
+                        size: selectedSize?.name as string,
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        pertencente: "cozinha"
+                    }
+
+                    setItems(oldArray => [...oldArray, data])
+
+                } else {
+                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                    const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
+
+                    const response = await api.post('/order/add', {
+                        order_id: route.params?.order_id,
+                        product_id: selectedProduct?.id,
+                        amount: Number(amount),
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        pertencente: "cozinha"
+                    })
+
+                    let data = {
+                        id: response.data.id,
+                        product_id: selectedProduct?.id as string,
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        amount: amount,
+                        size: selectedSize?.name as string,
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        pertencente: "cozinha"
+                    }
+
+                    setItems(oldArray => [...oldArray, data])
                 }
 
-                setItems(oldArray => [...oldArray, data])
+
+
             } else {
-                const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                if (selectedProduct?.estoque === "true") {//SE O O PRODUTO TIVER CONTROL DE ESTOQUE
 
-                const response = await api.post('/order/add', {
-                    order_id: route.params?.order_id,
-                    product_id: selectedProduct?.id,
-                    amount: Number(amount),
-                    price: itemPrice.toString(),
-                    name: selectedProduct?.name,
-                    pertencente: selectedProduct?.pertencente
-                })
+                    const calc = Number(selectedProduct.quantidade) - Number(amount)
 
-                let data = {
-                    id: response.data.id,
-                    product_id: selectedProduct?.id as string,
-                    name: selectedProduct?.name as string,
-                    amount: amount,
-                    size: selectedSize?.name as string,
-                    price: itemPrice.toString(),
-                    pertencente: selectedProduct?.pertencente
+                    if (Number(amount) > Number(selectedProduct?.quantidade)) {
+                        Alert.alert("Ops...",
+                            `Não temos mais essa quantidade para este Item! - ESTOQUE - ${selectedProduct?.quantidade}`)
+                        return;
+                    }
+                    await api.put('/product/estock', {//ATUALIZA A QUANTIDADE
+                        name: selectedProduct?.name,
+                        tamanho: selectedSize?.name,
+                        quantidade: Number(calc)
+                    })
+
+                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
+
+                    const response = await api.post('/order/add', {
+                        order_id: route.params?.order_id,
+                        product_id: selectedProduct?.id,
+                        amount: Number(amount),
+                        price: itemPrice.toString(),
+                        name: selectedProduct?.name,
+                        pertencente: selectedProduct?.pertencente
+                    })
+
+                    let data = {
+                        id: response.data.id,
+                        product_id: selectedProduct?.id as string,
+                        name: selectedProduct?.name as string,
+                        amount: amount,
+                        size: selectedSize?.name as string,
+                        price: itemPrice.toString(),
+                        pertencente: selectedProduct?.pertencente
+                    }
+
+                    setItems(oldArray => [...oldArray, data])
+                } else {
+
+                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
+
+                    const response = await api.post('/order/add', {
+                        order_id: route.params?.order_id,
+                        product_id: selectedProduct?.id,
+                        amount: Number(amount),
+                        price: itemPrice.toString(),
+                        name: selectedProduct?.name,
+                        pertencente: selectedProduct?.pertencente
+                    })
+
+                    let data = {
+                        id: response.data.id,
+                        product_id: selectedProduct?.id as string,
+                        name: selectedProduct?.name as string,
+                        amount: amount,
+                        size: selectedSize?.name as string,
+                        price: itemPrice.toString(),
+                        pertencente: selectedProduct?.pertencente
+                    }
+
+                    setItems(oldArray => [...oldArray, data])
+
+                    // if (route.params?.order_id === route.params?.order_id &&
+                    //     selectedProduct?.id === selectedProduct?.id) {
+                    //     alert("estou aqui")
+                    // }
+                    console.log(productItem)
+
+                    const amountCount = productItem.reduce((a, b) => a + Number(b.amount), 0);
+                    console.log(amountCount)
+
+                    // await api.put('/order/update', {
+                    //     order_id: route.params?.order_id,
+                    //     product_id: selectedProduct?.id,
+                    //     amount: Number(amountCount) + Number(amount),
+                    //     price: "444"
+                    // })
+                    // }
                 }
-
-                setItems(oldArray => [...oldArray, data])
             }
-        } else {
 
+        } else {//se for mesa nova
 
             if (check) {
-                const itemPrice = Number(selectedProduct?.price) * Number(amount)
-                const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
 
-                const response = await api.post('/order/add', {
-                    order_id: route.params?.order_id,
-                    product_id: selectedProduct?.id,
-                    amount: Number(amount),
-                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
-                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
-                    pertencente: "cozinha"
-                })
+                if (selectedProduct?.estoque === "true") {//SE O O PRODUTO TIVER CONTROL DE ESTOQUE
 
-                let data = {
-                    id: response.data.id,
-                    product_id: selectedProduct?.id as string,
-                    name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
-                    amount: amount,
-                    size: selectedSize?.name as string,
-                    price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
-                    pertencente: "cozinha"
+                    const calc = Number(selectedProduct.quantidade) - Number(amount)
+
+                    if (Number(amount) > Number(selectedProduct?.quantidade)) {
+                        Alert.alert("Ops...",
+                            `Não temos mais essa quantidade para este Item! - ESTOQUE - ${selectedProduct?.quantidade}`)
+                        return;
+                    }
+                    await api.put('/product/estock', {//ATUALIZA A QUANTIDADE
+                        name: selectedProduct?.name,
+                        tamanho: selectedSize?.name,
+                        quantidade: Number(calc)
+                    })
+
+                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                    const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
+
+                    const response = await api.post('/order/add', {
+                        order_id: route.params?.order_id,
+                        product_id: selectedProduct?.id,
+                        amount: Number(amount),
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        pertencente: "cozinha"
+                    })
+
+                    let data = {
+                        id: response.data.id,
+                        product_id: selectedProduct?.id as string,
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        amount: amount,
+                        size: selectedSize?.name as string,
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        pertencente: "cozinha"
+                    }
+
+                    setItems(oldArray => [...oldArray, data])
+
+                } else {
+
+                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                    const itemPrice2 = Number(selectedProduct2?.price) * Number(amount)
+
+                    const response = await api.post('/order/add', {
+                        order_id: route.params?.order_id,
+                        product_id: selectedProduct?.id,
+                        amount: Number(amount),
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        pertencente: "cozinha"
+                    })
+
+                    let data = {
+                        id: response.data.id,
+                        product_id: selectedProduct?.id as string,
+                        name: "2 sabores - " + selectedProduct?.name as string + " - " + selectedProduct2?.name as string,
+                        amount: amount,
+                        size: selectedSize?.name as string,
+                        price: itemPrice >= itemPrice2 ? itemPrice.toString() : itemPrice2.toString(),
+                        pertencente: "cozinha"
+                    }
+
+                    setItems(oldArray => [...oldArray, data])
                 }
 
-                setItems(oldArray => [...oldArray, data])
             } else {
 
                 if (selectedProduct?.estoque === "true") {//SE O O PRODUTO TIVER CONTROL DE ESTOQUE
@@ -290,7 +451,7 @@ export default function Order() {
                             `Não temos mais essa quantidade para este Item! - ESTOQUE - ${selectedProduct?.quantidade}`)
                         return;
                     }
-                    await api.put('/product/update', {//ATUALIZA A QUANTIDADE
+                    await api.put('/product/estock', {//ATUALIZA A QUANTIDADE
                         name: selectedProduct?.name,
                         tamanho: selectedSize?.name,
                         quantidade: Number(calc)
