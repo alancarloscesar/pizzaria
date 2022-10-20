@@ -72,14 +72,14 @@ export default function Report() {
 
         setDataReport(response.data)
 
-        console.log("+++++++++++ " + comissao)
+        // console.log("+++++++++++ " + comissao)
 
 
-        console.log(response.data)
+        // console.log(response.data)
 
-        console.log("Data inicial: " + dataInicialFormat)
-        console.log("Data final + 1 dia: " + dayPlusFormat)
-        console.log("Garçom: " + userSelected)
+        // console.log("Data inicial: " + dataInicialFormat)
+        // console.log("Data final + 1 dia: " + dayPlusFormat)
+        // console.log("Garçom: " + userSelected)
 
 
 

@@ -94,6 +94,7 @@ export default function Entrada({ categoryList, sizeList, productList }: Categor
             if (checkedPrice) {
                 if (qtd === '' && price === '') {
                     toast.warning('Qtd e Preço são obrigatorios para este produto!')
+                    return;
                 } else {
                     await apiClient.put('/product/estock', {
 
@@ -105,11 +106,12 @@ export default function Entrada({ categoryList, sizeList, productList }: Categor
                     toast.success('Atualizado com sucesso!!')
                     setPrice('')
                     setQtd('')
-                    window.location.reload();
+                    window.location.reload();//atualiza a page - f5
                 }
             } else {
                 if (qtd === '') {
                     toast.warning('Qtd é obrigatório para este produto!')
+                    return;
                 } else {
 
                     await apiClient.put('/product/estock', {
@@ -129,6 +131,7 @@ export default function Entrada({ categoryList, sizeList, productList }: Categor
         } else {
             if (price === '') {
                 toast.warning('Preço obrigatorio para este produto!')
+                return;
             } else {
                 await apiClient.put('/product/update', {
 
