@@ -19,6 +19,7 @@ model User {
   password      String
   created_at    DateTime?      @default(now())
   updated_at    DateTime?      @default(now())
+  type          String         @default("admin")
   orders        Order[]
   orderAccounts OrderAccount[]
 
@@ -79,12 +80,12 @@ model Item {
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
-  order      Order   @relation(fields: [order_id], references: [id])
-  product    Product @relation(fields: [product_id], references: [id])
-  order_id   String
-  product_id String
-  price      String
-  name       String
+  order       Order   @relation(fields: [order_id], references: [id])
+  product     Product @relation(fields: [product_id], references: [id])
+  order_id    String
+  product_id  String
+  price       String
+  name        String
   pertencente String?
 
   @@map("items")
