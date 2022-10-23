@@ -5,7 +5,8 @@ class ListNameUser{
         const list = await prismaClient.user.findMany({
             select:{
                 id:true,
-                name: true
+                name: true,
+                type:true
             }
         })
         return list;
