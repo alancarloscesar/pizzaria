@@ -87,7 +87,7 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
             if (radioCozBar === '') {
                 toast.warning("selecione 'COZINHA' ou 'BAR'")
                 return;
-            } 
+            }
 
             if (checked && qtd === '') {
                 toast.warning("O campo quantidade é obrigatório quando o estoque estiver marcardo!!")
@@ -147,7 +147,7 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
         // if (radioCozBar === '') {
         //     toast.warning("selecione 'COZINHA' ou 'BAR'")
         // } else {
-            setradioCozBar(event.target.value);
+        setradioCozBar(event.target.value);
         // }
     }
 
@@ -236,6 +236,7 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
                             </div>
                         </div>
 
+
                         {checked && (
                             <input
                                 className={styles.inputsData}
@@ -245,7 +246,6 @@ export default function Product({ categoryList, sizeList }: CategoryProps) {
                                 type="number"
                             />
                         )}
-
                         {/* <textarea
                             placeholder="Descrição do produto..."
                             value={descricao}

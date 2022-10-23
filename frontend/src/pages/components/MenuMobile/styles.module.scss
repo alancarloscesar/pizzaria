@@ -28,9 +28,12 @@
 
     a {
         color: var(--white);
-        margin-bottom: 4rem;
+        margin-bottom: 2rem;
         transition: 0.7s;
         font-size: 16px;
+
+        width: 90%;
+        text-align: center;
     }
 
     a:hover {

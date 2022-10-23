@@ -62,13 +62,13 @@
     //     text-align: center;
     //     line-height: 18px;
     // }
-    
+
 }
 
 .Areaswitch {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
 
     select {
         background-color: var(--dark-900);
@@ -107,7 +107,7 @@
 
 .inputsData::-webkit-outer-spin-button,
 .inputsData::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    appearance: none;
     margin: 0;
 }
 
@@ -148,17 +148,17 @@
     border-radius: 0.3rem;
 }
 
-.areaRadioBtn{
+.areaRadioBtn {
     display: flex;
     flex-direction: row;
     margin: 1rem 0;
     // justify-content: flex-end;
 
-    div{
+    div {
         margin-right: 1rem;
     }
 
-    label{
+    label {
         color: #fff;
         margin-left: .5rem;
     }
@@ -183,4 +183,41 @@
         min-width: 80vw;
     }
 
+}
+
+@media (max-width: 478px) {
+
+    .container{
+        margin-top: 35%;
+    }
+
+    .sectionData{
+        h1{
+            font-size: 1.4rem;
+            margin-bottom: 15%;
+        }
+    }
+
+    .Areaswitch {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+
+        select {
+            width: 100%;
+            margin-bottom: 2%;
+        }
+
+
+    }
+
+    .switch {
+        width: 100%;
+        justify-content: flex-end;
+        padding-bottom: 2%;
+
+        h3 {
+            padding-right: 2%;
+        }
+    }
 }

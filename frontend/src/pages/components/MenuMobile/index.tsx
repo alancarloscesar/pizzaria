@@ -39,6 +39,10 @@ export default function MenuMobile() {
 
                 <nav className={styles.navHeader}>
 
+                    <Link href='/dashboard'>
+                        <a>Dashboard</a>
+                    </Link>
+
                     <Link href='/category'>
                         <a>Categoria</a>
                     </Link>

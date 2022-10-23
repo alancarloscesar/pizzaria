@@ -104,6 +104,7 @@ export default function Order() {
     const [itemExist, setItemsExist] = useState<itemExist[]>()
 
     const [getTextBtnNext, setgetTextBtnNext] = useState('Avançar')
+    const [pegaQtdProduct, setPegaQtdProduct] = useState('')
 
     const route = useRoute<OrderTypeProps>()
 
@@ -230,6 +231,7 @@ export default function Order() {
                             `Não temos mais essa quantidade para este Item! - ESTOQUE - ${selectedProduct?.quantidade}`)
                         return;
                     }
+
                     await api.put('/product/estock', {//ATUALIZA A QUANTIDADE
                         name: selectedProduct?.name,
                         tamanho: selectedSize?.name,
@@ -346,27 +348,10 @@ export default function Order() {
                         amount: amount,
                         size: selectedSize?.name as string,
                         price: itemPrice.toString(),
-                        pertencente: selectedProduct?.pertencente
+                        pertencente: selectedProduct?.pertencente as string
                     }
 
                     setItems(oldArray => [...oldArray, data])
-
-                    // if (route.params?.order_id === route.params?.order_id &&
-                    //     selectedProduct?.id === selectedProduct?.id) {
-                    //     alert("estou aqui")
-                    // }
-                    console.log(productItem)
-
-                    const amountCount = productItem.reduce((a, b) => a + Number(b.amount), 0);
-                    console.log(amountCount)
-
-                    // await api.put('/order/update', {
-                    //     order_id: route.params?.order_id,
-                    //     product_id: selectedProduct?.id,
-                    //     amount: Number(amountCount) + Number(amount),
-                    //     price: "444"
-                    // })
-                    // }
                 }
             }
 
@@ -480,28 +465,81 @@ export default function Order() {
 
                     setItems(oldArray => [...oldArray, data])
                 } else {
-                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
 
-                    const response = await api.post('/order/add', {
-                        order_id: route.params?.order_id,
-                        product_id: selectedProduct?.id,
-                        amount: Number(amount),
-                        price: itemPrice.toString(),
-                        name: selectedProduct?.name,
-                        pertencente: selectedProduct?.pertencente
-                    })
+                    //TENTATIVA DE PEGAR OS ITEM IGUAIS E SOMAR
 
-                    let data = {
-                        id: response.data.id,
-                        product_id: selectedProduct?.id as string,
-                        name: selectedProduct?.name as string,
-                        amount: amount,
-                        size: selectedSize?.name as string,
-                        price: itemPrice.toString(),
-                        pertencente: selectedProduct?.pertencente
+                    //ESSA PORRA NÃO SAI DO ZERO QUANDO CADASTRA ALGO
+                    if (route.params?.order_id === route.params?.order_id &&
+                        selectedProduct?.id === selectedProduct?.id) {
+                        alert("estou aqui")
+                        // }
+                        listItems();
+                        // console.log(productItem)
+
+                        if (productItem.length === 0) {
+                            alert('estou dentro do 0')
+                            const itemPrice = Number(selectedProduct?.price) * Number(amount)
+
+                            const response = await api.post('/order/add', {
+                                order_id: route.params?.order_id,
+                                product_id: selectedProduct?.id,
+                                amount: Number(amount),
+                                price: itemPrice.toString(),
+                                name: selectedProduct?.name,
+                                pertencente: selectedProduct?.pertencente
+                            })
+
+                            let data = {
+                                id: response.data.id,
+                                product_id: selectedProduct?.id as string,
+                                name: selectedProduct?.name as string,
+                                amount: amount,
+                                size: selectedSize?.name as string,
+                                price: itemPrice.toString(),
+                                pertencente: selectedProduct?.pertencente as string
+                            }
+
+                            setItems(oldArray => [...oldArray, data])
+
+
+                        } else {
+
+
+                            if (productItem.length === 1) {
+                                alert('estou dentro do === 1')
+                                const amountCount1 = productItem.reduce((a, b) => a + (Number(b.amount) + Number(amount)), 0);
+                                alert(amountCount1)
+                                setPegaQtdProduct(amountCount1.toString())
+
+                                await api.put('/order/update', {
+                                    order_id: route.params?.order_id,
+                                    product_id: selectedProduct?.id,
+                                    amount: Number(pegaQtdProduct),
+                                    price: "444"
+                                })
+
+
+                            }
+                            else {
+
+                                alert('estou dentro do > 1')
+                                const values = Number(pegaQtdProduct) + Number(amount)
+                                alert(">1 - " + values)
+                                setPegaQtdProduct(values.toString())
+
+                                await api.put('/order/update', {
+                                    order_id: route.params?.order_id,
+                                    product_id: selectedProduct?.id,
+                                    amount: Number(values),
+                                    price: "444"
+                                })
+
+
+                            }
+                        }
+
+
                     }
-
-                    setItems(oldArray => [...oldArray, data])
                 }
             }
         }
@@ -514,6 +552,15 @@ export default function Order() {
                 item_id: item_idd
             }
         })
+
+        //DEVOLVENDO A QTD AO PRODUTO JÁ QUE FOI CANCELADO O ITEM
+        const calc = Number(selectedProduct?.quantidade) + (Number(amount) - Number(amount))
+        await api.put('/product/estock', {//ATUALIZA A QUANTIDADE
+            name: selectedProduct?.name,
+            tamanho: selectedSize?.name,
+            quantidade: Number(calc)
+        })
+
         //apos remover da api removemos da flatlis com filter
         let removeItem = items.filter(item => {
             return (item.id !== item_idd)//retorna tudo menos o removido
@@ -737,7 +784,7 @@ export default function Order() {
                 <ModalPicker
                     handleClose={() => setModalProductVisible(false)}
                     options={product}
-                    selectedItem={handleProductSelect}
+                    selectedItem={() => handleProductSelect}
                 //dados trabalhados de dentro do comp. modalPicker
                 />
             </Modal>

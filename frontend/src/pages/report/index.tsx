@@ -192,8 +192,6 @@ export default function Report() {
         <>
             <Header />
 
-
-
             <main className={styles.container}>
 
                 <section className={styles.areaPicker}>
@@ -267,7 +265,7 @@ export default function Report() {
                                 {({ loading }) => loading ? (
                                     'Carregando...'
                                 ) : (
-                                    <button>Imprimir</button>
+                                    <button className={style.btnIm}>Imprimir</button>
                                 )}
                             </PDFDownloadLink>
                             {/* <button>Imprimir</button> */}
