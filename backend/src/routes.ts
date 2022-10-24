@@ -43,6 +43,8 @@ import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { UpdateQtdProductEqualsController } from "./controllers/order/UpdateQtdProductEqualsController";
 import { ListItemController } from "./controllers/order/ListItemController";
 
+import { invoicingDateController } from "./controllers/invoicing/invoicingDateContrller";
+
 const router = Router();
 
 const upload = multer(uploadConfig.upload("./tmp"))
@@ -91,6 +93,9 @@ router.put('/account', isAuthenticated, new UpdateAccountController().handle)
 
 //-------------ROTAS PARA RELATORIO DE COMISSOES-----------
 router.post('/report', isAuthenticated, new ReportCommissionController().handle)
+
+//------------- ROTAS PARA O FATURAMENTO ---------------------
+router.post('/invoicing', isAuthenticated, new invoicingDateController().handle)
 
 
 export { router }
