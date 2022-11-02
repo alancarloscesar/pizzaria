@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Smart Menu",
-    "slug": "Smart Menu",
+    "slug": "Smart-Menu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,9 +22,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#101026"
-      }
+      },
+      "package": "com.alancarloscesar.smartmenu"
     },
     "web": {
       "favicon": "./assets/favicon.png"

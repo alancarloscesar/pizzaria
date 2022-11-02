@@ -105,6 +105,7 @@ export default function Order() {
 
     const [getTextBtnNext, setgetTextBtnNext] = useState('Avançar')
     const [pegaQtdProduct, setPegaQtdProduct] = useState('')
+    const [count, setCount] = useState(0)
 
     const route = useRoute<OrderTypeProps>()
 
@@ -469,77 +470,82 @@ export default function Order() {
                     //TENTATIVA DE PEGAR OS ITEM IGUAIS E SOMAR
 
                     //ESSA PORRA NÃO SAI DO ZERO QUANDO CADASTRA ALGO
-                    if (route.params?.order_id === route.params?.order_id &&
-                        selectedProduct?.id === selectedProduct?.id) {
-                        alert("estou aqui")
-                        // }
-                        listItems();
-                        // console.log(productItem)
+                    // if (route.params?.order_id === route.params?.order_id &&
+                    //     selectedProduct?.id === selectedProduct?.id) {
+                    //     alert("estou aqui")
+                    //     // }
+                    //     listItems();
+                    //     // console.log(productItem)
 
-                        if (productItem.length === 0) {
-                            alert('estou dentro do 0')
-                            const itemPrice = Number(selectedProduct?.price) * Number(amount)
+                    // if (productItem.length === 0 && count === 0) {
+                    //     alert('estou dentro do 0')
+                    const itemPrice = Number(selectedProduct?.price) * Number(amount)
 
-                            const response = await api.post('/order/add', {
-                                order_id: route.params?.order_id,
-                                product_id: selectedProduct?.id,
-                                amount: Number(amount),
-                                price: itemPrice.toString(),
-                                name: selectedProduct?.name,
-                                pertencente: selectedProduct?.pertencente
-                            })
+                    const response = await api.post('/order/add', {
+                        order_id: route.params?.order_id,
+                        product_id: selectedProduct?.id,
+                        amount: Number(amount),
+                        price: itemPrice.toString(),
+                        name: selectedProduct?.name,
+                        pertencente: selectedProduct?.pertencente
+                    })
 
-                            let data = {
-                                id: response.data.id,
-                                product_id: selectedProduct?.id as string,
-                                name: selectedProduct?.name as string,
-                                amount: amount,
-                                size: selectedSize?.name as string,
-                                price: itemPrice.toString(),
-                                pertencente: selectedProduct?.pertencente as string
-                            }
-
-                            setItems(oldArray => [...oldArray, data])
-
-
-                        } else {
-
-
-                            if (productItem.length === 1) {
-                                alert('estou dentro do === 1')
-                                const amountCount1 = productItem.reduce((a, b) => a + (Number(b.amount) + Number(amount)), 0);
-                                alert(amountCount1)
-                                setPegaQtdProduct(amountCount1.toString())
-
-                                await api.put('/order/update', {
-                                    order_id: route.params?.order_id,
-                                    product_id: selectedProduct?.id,
-                                    amount: Number(pegaQtdProduct),
-                                    price: "444"
-                                })
-
-
-                            }
-                            else {
-
-                                alert('estou dentro do > 1')
-                                const values = Number(pegaQtdProduct) + Number(amount)
-                                alert(">1 - " + values)
-                                setPegaQtdProduct(values.toString())
-
-                                await api.put('/order/update', {
-                                    order_id: route.params?.order_id,
-                                    product_id: selectedProduct?.id,
-                                    amount: Number(values),
-                                    price: "444"
-                                })
-
-
-                            }
-                        }
-
-
+                    let data = {
+                        id: response.data.id,
+                        product_id: selectedProduct?.id as string,
+                        name: selectedProduct?.name as string,
+                        amount: amount,
+                        size: selectedSize?.name as string,
+                        price: itemPrice.toString(),
+                        pertencente: selectedProduct?.pertencente as string
                     }
+
+                    setItems(oldArray => [...oldArray, data])
+                    //     setCount(1)
+
+
+                    // } else {
+                    //     alert('naoooooo')
+
+
+                    //     //if (productItem.length === 1) {
+                    //         alert('estou dentro do === 1')
+                    //         const amountCount1 = productItem.reduce((a, b) => a + (Number(b.amount) + Number(amount)), 0);
+                    //         alert(amountCount1)
+                    //         setPegaQtdProduct(amountCount1.toString())
+
+                    //         await api.put('/order/update', {
+                    //             order_id: route.params?.order_id,
+                    //             product_id: selectedProduct?.id,
+                    //             amount: Number(pegaQtdProduct),
+                    //             price: "444"
+                    //         })
+                    //         setCount(2)
+
+
+
+                    //     //}
+                    //     if (productItem.length > 1) {
+
+                    //         alert('estou dentro do > 1')
+                    //         const values = Number(pegaQtdProduct) + Number(amount)
+                    //         alert(">1 - " + values)
+                    //         setPegaQtdProduct(values.toString())
+
+                    //         await api.put('/order/update', {
+                    //             order_id: route.params?.order_id,
+                    //             product_id: selectedProduct?.id,
+                    //             amount: Number(values),
+                    //             price: "444"
+                    //         })
+
+
+                    //     }
+
+                    //     }
+
+
+                    // }
                 }
             }
         }

@@ -8,7 +8,7 @@ import { FiRefreshCcw } from 'react-icons/fi'
 
 import { setupAPIClient } from '../../services/api'
 
-import { ModalOrder } from '../components/ModalOrderCozinha'
+import ModalOrder  from '../components/ModalOrderCozinha'
 
 import Modal from 'react-modal';
 
@@ -69,6 +69,11 @@ export default function CozinhaDash({ orders }: HomeProps) {
                 pertencente: "cozinha"
             }
         })
+
+        if(response.data === ''){
+            alert('nada aqui')
+            return;
+        }
 
         setModalItem(response.data);
         setModalVisible(true);

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import styles from './styles.module.scss'
 import style from './styleCard.module.scss'
 import { format, add } from 'date-fns'
@@ -15,9 +15,17 @@ registerLocale('pt', pt)
 import { setupAPIClient } from "../../services/api";
 import { AuthContext } from "../../contexts/AuthContext";
 
-import { PDFDownloadLink, View } from '@react-pdf/renderer'
+import { View, PDFDownloadLink } from '@react-pdf/renderer'
 import { Page, Text, Image, Document, StyleSheet } from "@react-pdf/renderer";
+import dynamic from 'next/dynamic'
 
+
+// const PDFDownloadLink = dynamic(() => import('@react-pdf/renderer'), {
+//     ssr: false
+// });
+
+
+//import {Image} from 'next/image';
 
 
 
@@ -36,23 +44,24 @@ export default function Report() {
     const [dataFinal, setDataFinal] = useState(new Date());
     const [userList, setUserList] = useState([]);
     const [userSelected, setUserSelected] = useState(0)
-    const [comissao, setComissao] = useState<contaProps[]>([])
-    const [dataReport, setDataReport] = useState<contaProps[]>([])
+    const [comissao, setComissao] = useState<contaProps[] | []>([])
+    const [dataReport, setDataReport] = useState<contaProps[] | []>([])
     const [valorTotalComissao, setValorTotal] = useState('')
+
+    const [isClient, setIsClient] = useState(false)
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
 
     setDefaultLocale('pt');
     const api = setupAPIClient();
-
-    useEffect(() => {
-
-        loadUser();
-
-    }, [])
 
     async function loadUser() {
         const response = await api.get('/user/name');
         setUserList(response.data)
     }
+
 
     async function handleComissao() {
 
@@ -145,12 +154,13 @@ export default function Report() {
 
     //COMPONENTE DO PDF
     const PDFFiles = () => {
+
         return (
             <Document>
                 <Page style={stylesPdf.body}>
                     <View style={stylesPdf.areaTitulo}>
                         <Text style={stylesPdf.header} fixed>Relatório de Comissões</Text>
-                        <Image style={stylesPdf.image} src="/logopdf.png" />
+                        {/* <Image style={stylesPdf.image} src="/logopdf.png" /> */}
                     </View>
                     <View style={stylesPdf.line} />
 
@@ -224,7 +234,7 @@ export default function Report() {
                         <select value={userSelected} onChange={handleChangeGarcom} onClick={loadUser}
                         >
                             {
-                                userList.map((item) => (
+                                userList?.map((item) => (
                                     <option onClick={loadUser} key={item.id}>{item.name}</option>
                                 ))
                             }
@@ -244,6 +254,7 @@ export default function Report() {
                     <div className={style.card}>
                         <header>
                             <img src="/user.png" alt="minha img" width={100} height={100} />
+                            {/* <Image src="/user.png" alt="minha img" width={100} height={100} /> */}
                         </header>
 
                         <main>
@@ -261,14 +272,18 @@ export default function Report() {
                         </main>
 
                         <footer>
-                            <PDFDownloadLink document={<PDFFiles />} fileName="Comissões">
-                                {({ loading }) => loading ? (
-                                    'Carregando...'
-                                ) : (
-                                    <button className={style.btnIm}>Imprimir</button>
-                                )}
-                            </PDFDownloadLink>
-                            {/* <button>Imprimir</button> */}
+                            {
+                                isClient && (
+
+                                    <PDFDownloadLink document={<PDFFiles />} fileName="Comissões">
+                                        {({ loading }) => loading ? (
+                                            'Carregando...'
+                                        ) : (
+                                            <button className={style.btnIm}>Imprimir</button>
+                                        )}
+                                    </PDFDownloadLink>
+                                )
+                            }
 
                         </footer>
 

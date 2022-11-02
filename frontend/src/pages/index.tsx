@@ -1,13 +1,13 @@
 import Head from 'next/head'
 import Image from 'next/image';
-import styles from '../../styles/home.module.scss';
+import styles from './home.module.scss';
 import { toast } from 'react-toastify'
 import {canSSRGuest} from '../utils/canSSRGuest'
 
 import logoImg from '../../public/logo.png';
 
-import { Input } from './components/ui/Input'
-import { Button } from './components/ui/Button'
+import Input  from './components/ui/Input'
+import Button  from './components/ui/Button'
 
 import { useContext, FormEvent, useState } from 'react';//usar o context o form event para não atualizar a page
 import { AuthContext } from '../contexts/AuthContext';//meu context

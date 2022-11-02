@@ -10,7 +10,7 @@ import ReactSwitch from 'react-switch';
 interface ModalOrderProps {
     isOpen: boolean;
     onRequestClose: () => void;
-    order: OrderItemProps[];
+    order: OrderItemProps[] | [];
 
     handleFinishOrder: (id: string) => void;//para finalizar o pedido
 }
@@ -26,11 +26,10 @@ interface ItemProps {
     name: string;
 }
 
-export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }: ModalOrderProps) {
+export default function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }: ModalOrderProps) {
 
     const setupApi = setupAPIClient()
 
-    const [dataOrder, setDataOrder] = useState<OrderItemProps[]>()
     const [dataAccount, setDataAccount] = useState<AccountProps>()
     const [dataItems, setDataItem] = useState<ItemProps>()
     const [checked, setChecked] = useState(true)
@@ -54,13 +53,13 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
 
             const response = await setupApi.get('/order/account', {
                 params: {
-                    order_id: order[0].order_id
+                    order_id: order[0]?.order_id
                 }
             })
 
             const resp = await setupApi.get('/order/detail', {
                 params: {
-                    order_id: order[0].order_id,
+                    order_id: order?.[0]?.order_id,
                     pertencente: "bar"
                 }
             })
@@ -71,7 +70,7 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
 
         handleLoad()
 
-    }, [])
+    }, [order, setupApi])
 
     const handleChange = nextChecked => {
         setChecked(nextChecked);
@@ -109,12 +108,12 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
 
                 <h2 className={styles.detalhes}>Detalhes do pedido</h2>
                 <span className={styles.table}>
-                    Mesa: <strong>{order[0].order.table}</strong>
+                    Mesa: <strong>{order?.[0]?.order.table}</strong>
                 </span>
 
                 <main className='main'>
 
-                    {order.map((item, index) => (
+                    {order?.map((item, index) => (
 
                         <section key={item.id} className={styles.containerItem}>
                             <span>{item.amount}x - <strong>{dataItems ? dataItems[index].name : "erro"} </strong>- {item.product.tamanho}</span>
@@ -123,7 +122,7 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder }:
                     ))}
 
                     <section className={styles.footer}>
-                        <h2 style={{ fontWeight: 100, marginLeft: 25 }}>Total: <strong>{checked ? dataAccount?.conta_comissao : dataAccount?.valor_conta}</strong></h2>
+                        <h2 style={{ fontWeight: 100, marginRight: 25 }}>Total: <strong>{checked ? dataAccount?.conta_comissao : dataAccount?.valor_conta}</strong></h2>
                     </section>
 
                 </main>

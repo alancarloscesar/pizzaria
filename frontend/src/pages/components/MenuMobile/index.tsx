@@ -1,11 +1,10 @@
 
 import styles from './styles.module.scss'
-import stylesMobile from './stylesMobile.module.scss'
 import Link from 'next/link'
 import { FiLogOut } from 'react-icons/fi'
 import { AuthContext } from '../../../contexts/AuthContext'
 import { useContext } from 'react'
-import { FiMenu, FiX } from 'react-icons/fi'
+import { FiX } from 'react-icons/fi'
 import { useState, useEffect } from 'react'
 import Header from '../Header'
 import { setupAPIClient } from '../../../services/api'
@@ -13,7 +12,8 @@ import { setupAPIClient } from '../../../services/api'
 
 export default function MenuMobile() {
     //document.documentElement.style.overflow = 'hidden';//oculta o scrol da page
-    window.scrollTo(0, 0);//pagina indo para o topo
+    //window.scrollTo(0, 0);//pagina indo para o topo
+    
     const [menuDesktop, setMenuDesktop] = useState(false)
     const { signOut } = useContext(AuthContext)
     const [typeUser, setTypeUser] = useState('')
@@ -26,7 +26,7 @@ export default function MenuMobile() {
             setTypeUser(response.data.type)
         }
         loadUser()
-    }, [])
+    }, [api])
 
     return (
         <>
