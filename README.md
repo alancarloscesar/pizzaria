@@ -12,8 +12,8 @@ Tecnologias utilizadas:
 Funcionalidades:
 Cadastro de categorias, tamanhos, cardápio, controle de estoque, gerenciamento de pedidos, e relatórios detalhados.
 
-Vídeo de demonstração.
 
+Vídeo de demonstração.
 
 https://user-images.githubusercontent.com/26394257/201959973-e828a24d-dcbb-4c50-97e0-030a9bdecd1c.mp4
 
